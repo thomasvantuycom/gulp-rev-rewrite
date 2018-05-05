@@ -29,7 +29,7 @@ function plugin(options) {
     }
 
     if (file.isStream()) {
-      this.emit('error', new PluginError('gulp-rev-replace', 'Streaming not supported'));
+      this.emit('error', new PluginError('gulp-rev-rewrite', 'Streaming not supported'));
       return cb();
     }
 

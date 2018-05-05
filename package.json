@@ -1,9 +1,12 @@
 {
-  "name": "gulp-rev-replace",
-  "version": "0.4.4",
+  "name": "gulp-rev-rewrite",
+  "version": "1.0.0",
   "description": "Rewrite occurences of filenames which have been renamed by gulp-rev",
   "main": "index.js",
-  "repository": "jamesknelson/gulp-rev-replace",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheDancingCode/gulp-rev-rewrite.git"
+  },
   "scripts": {
     "test": "mocha"
   },
@@ -16,9 +19,9 @@
     "asset"
   ],
   "author": {
-    "name": "James K Nelson",
-    "email": "james@numbattech.com",
-    "url": "http://jamesknelson.com"
+    "name": "Thomas Vantuycom",
+    "email": "thomasvantuycom@protonmail.com",
+    "url": "https://github.com/TheDancingCode"
   },
   "engines": {
     "node": ">=0.10.0"

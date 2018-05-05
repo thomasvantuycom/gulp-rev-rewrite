@@ -1,12 +1,12 @@
-[gulp](https://github.com/wearefractal/gulp)-rev-replace [![Build Status](https://travis-ci.org/jamesknelson/gulp-rev-replace.svg?branch=master)](https://travis-ci.org/jamesknelson/gulp-rev-replace)
+gulp-rev-rewrite [![Build Status](https://travis-ci.org/TheDancingCode/gulp-rev-rewrite.svg?branch=master)](https://travis-ci.org/TheDancingCode/gulp-rev-rewrite)
 ================
 
 Rewrite occurrences of filenames which have been renamed by gulp-rev
 
 ## Install
 
-```bash
-$ npm install --save-dev gulp-rev-replace
+```
+npm install gulp-rev-rewrite --save-dev
 ```
 
 
@@ -15,12 +15,12 @@ $ npm install --save-dev gulp-rev-replace
 Pipe through a stream which has both the files you want to be updated, as well as the files which have been renamed.
 
 For example, we can use [gulp-useref](https://github.com/jonkemp/gulp-useref) to concatenate assets in an index.html,
-and then use [gulp-rev](https://github.com/sindresorhus/gulp-rev) and gulp-rev-replace to cache-bust them.
+and then use [gulp-rev](https://github.com/sindresorhus/gulp-rev) and gulp-rev-rewrite to cache-bust them.
 
 ```js
 var gulp = require('gulp');
 var rev = require('gulp-rev');
-var revReplace = require('gulp-rev-replace');
+var revRewrite = require('gulp-rev-rewrite');
 var useref = require('gulp-useref');
 var filter = require('gulp-filter');
 var uglify = require('gulp-uglify');
@@ -42,16 +42,16 @@ gulp.task("index", function() {
     .pipe(indexHtmlFilter)
     .pipe(rev())                // Rename the concatenated files (but not index.html)
     .pipe(indexHtmlFilter.restore)
-    .pipe(revReplace())         // Substitute in new filenames
+    .pipe(revRewrite())         // Substitute in new filenames
     .pipe(gulp.dest('public'));
 });
 ```
 
-It is also possible to use gulp-rev-replace without gulp-useref:
+It is also possible to use gulp-rev-rewrite without gulp-useref:
 
 ```js
 var rev = require("gulp-rev");
-var revReplace = require("gulp-rev-replace");
+var revRewrite = require("gulp-rev-rewrite");
 gulp.task("revision", ["dist:css", "dist:js"], function(){
   return gulp.src(["dist/**/*.css", "dist/**/*.js"])
     .pipe(rev())
@@ -60,11 +60,11 @@ gulp.task("revision", ["dist:css", "dist:js"], function(){
     .pipe(gulp.dest(opt.distFolder))
 })
 
-gulp.task("revreplace", ["revision"], function(){
+gulp.task("revRewrite", ["revision"], function(){
   var manifest = gulp.src("./" + opt.distFolder + "/rev-manifest.json");
 
   return gulp.src(opt.srcFolder + "/index.html")
-    .pipe(revReplace({manifest: manifest}))
+    .pipe(revRewrite({manifest: manifest}))
     .pipe(gulp.dest(opt.distFolder));
 });
 ```
@@ -72,7 +72,7 @@ gulp.task("revreplace", ["revision"], function(){
 
 ## API
 
-### revReplace(options)
+### revRewrite(options)
 
 #### options.canonicalUris
 Type: `boolean`
@@ -127,7 +127,7 @@ function replaceJsIfMap(filename) {
 }
 
 return gulp.src(opt.distFolder + '**/*.js')
-    .pipe(revReplace({
+    .pipe(revRewrite({
         manifest: manifest,
         modifyUnreved: replaceJsIfMap,
         modifyReved: replaceJsIfMap
@@ -151,4 +151,4 @@ return gulp.src(opt.distFolder + '**/*.js')
 
 ## License
 
-[MIT](http://opensource.org/licenses/MIT) © [James K Nelson](http://jamesknelson.com)
+[MIT](http://opensource.org/licenses/MIT) © [James K Nelson](http://jamesknelson.com), [Thomas Vantuycom](https://github.com/TheDancingCode)

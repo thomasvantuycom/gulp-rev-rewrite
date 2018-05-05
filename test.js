@@ -9,7 +9,7 @@ var path = require('path');
 var rev = require('gulp-rev');
 var es = require('event-stream');
 
-var revReplace = require('./index');
+var revRewrite = require('./index');
 var utils = require('./utils');
 
 var svgFileBody   = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg"></svg>';
@@ -23,7 +23,7 @@ it('should by default replace filenames in .css and .html files', function (cb) 
   var stream = filesToRevFilter
     .pipe(rev())
     .pipe(filesToRevFilter.restore)
-    .pipe(revReplace());
+    .pipe(revRewrite());
 
   var fileCount = 0;
   var unreplacedCSSFilePattern = /style\.css/;
@@ -87,7 +87,7 @@ it('should not replace filenames in extensions not in replaceInExtensions', func
   var stream = filesToRevFilter
     .pipe(rev())
     .pipe(filesToRevFilter.restore)
-    .pipe(revReplace({replaceInExtensions: ['.svg']}));
+    .pipe(revRewrite({replaceInExtensions: ['.svg']}));
 
   var unreplacedCSSFilePattern = /style\.css/;
   stream.on('data', function(file) {
@@ -123,7 +123,7 @@ it('should not canonicalize URIs when option is off', function (cb) {
   var stream = filesToRevFilter
     .pipe(rev())
     .pipe(filesToRevFilter.restore)
-    .pipe(revReplace({canonicalUris: false}));
+    .pipe(revRewrite({canonicalUris: false}));
 
   var unreplacedCSSFilePattern = /style\.css/;
   stream.on('data', function(file) {
@@ -160,7 +160,7 @@ it('should add prefix to path', function (cb) {
   var stream = filesToRevFilter
     .pipe(rev())
     .pipe(filesToRevFilter.restore)
-    .pipe(revReplace({prefix: 'http://example.com'}));
+    .pipe(revRewrite({prefix: 'http://example.com'}));
 
   var replacedCSSFilePattern = /"http:\/\/example\.com\/css\/style-[^\.]+\.css"/;
   stream.on('data', function(file) {
@@ -198,7 +198,7 @@ it('should stop at first longest replace', function(cb) {
   var stream = filesToRevFilter
     .pipe(rev())
     .pipe(filesToRevFilter.restore)
-    .pipe(revReplace({canonicalUris: false}));
+    .pipe(revRewrite({canonicalUris: false}));
 
   stream.on('data', function(file) {
     if (file.path === 'script.js') {
@@ -247,7 +247,7 @@ describe('manifest option', function () {
       })
     ]);
 
-    var stream = revReplace({manifest: manifest});
+    var stream = revRewrite({manifest: manifest});
 
     var replacedCSSFilePattern = /style-12345\.css/;
     var replacedSVGFilePattern = /font-12345\.svg/;
@@ -307,7 +307,7 @@ describe('manifest option', function () {
       })
     ]);
 
-    var stream = revReplace({prefix: 'http://example.com', manifest: manifest});
+    var stream = revRewrite({prefix: 'http://example.com', manifest: manifest});
 
     var replacedCSSFilePattern = /"http:\/\/example\.com\/css\/style-12345\.css"/;
     stream.on('data', function(file) {
@@ -496,7 +496,7 @@ describe('modifyUnreved and modifyReved options', function() {
             return filename;
         }
 
-        var stream = revReplace({
+        var stream = revRewrite({
             manifest: manifest,
             modifyUnreved: replaceJsIfMap,
             modifyReved: replaceJsIfMap
