@@ -1,17 +1,15 @@
 'use strict';
 
-module.exports = plugin;
+const escapeRegExp = require('lodash.escaperegexp');
+const path = require('path');
+const PluginError = require('plugin-error');
+const through = require('through2');
 
-var escapeRegExp = require('lodash.escaperegexp');
-var path = require('path');
-var PluginError = require('plugin-error');
-var through = require('through2');
+const utils = require('./utils');
 
-var utils = require('./utils');
-
-function plugin(options) {
-  var renames = [];
-  var cache = [];
+module.exports = function(options) {
+  let renames = [];
+  const cache = [];
 
   options = Object.assign({ canonicalUris: true, prefix: '', replaceInExtensions: ['.js', '.css', '.html', '.hbs'] }, options);
 
@@ -44,12 +42,12 @@ function plugin(options) {
 
     cb();
   }, function replaceInFiles(cb) {
-    var stream = this;
+    const stream = this;
 
     if (options.manifest) {
       // Read manifest file for the list of renames.
       options.manifest.on('data', function (file) {
-        var manifest = JSON.parse(file.contents.toString());
+        const manifest = JSON.parse(file.contents.toString());
         Object.keys(manifest).forEach(function (srcFile) {
           renames.push({
             unreved: canonicalizeUri(srcFile),
@@ -69,22 +67,22 @@ function plugin(options) {
       // Once we have a full list of renames, search/replace in the cached
       // files and push them through.
       cache.forEach(function replaceInFile(file) {
-        var contents = file.contents.toString();
+        let contents = file.contents.toString();
 
         renames.forEach(function replaceOnce(rename, index) {
-          var unreved = options.modifyUnreved ? options.modifyUnreved(rename.unreved) : rename.unreved;
-          var reved = options.modifyReved ? options.modifyReved(rename.reved) : rename.reved;
-          var regexp = new RegExp(escapeRegExp(unreved), 'g');
-          var containingUnreved = [];
-          for (var i = 0; i < index; i+=1){
-            var longerUnreved = options.modifyUnreved ? options.modifyUnreved(renames[i].unreved) : renames[i].unreved;
+          const unreved = options.modifyUnreved ? options.modifyUnreved(rename.unreved) : rename.unreved;
+          const reved = options.modifyReved ? options.modifyReved(rename.reved) : rename.reved;
+          const regexp = new RegExp(escapeRegExp(unreved), 'g');
+          const containingUnreved = [];
+          for (let i = 0; i < index; i+=1){
+            const longerUnreved = options.modifyUnreved ? options.modifyUnreved(renames[i].unreved) : renames[i].unreved;
             if(longerUnreved.indexOf(unreved) !== -1){
               containingUnreved.push(longerUnreved);
             }
           }
           contents = contents.replace(regexp, function(match, offset, string){
-            for(var i = 0; i < containingUnreved.length; i+=1){
-              var element = containingUnreved[i];
+            for(let i = 0; i < containingUnreved.length; i+=1){
+              const element = containingUnreved[i];
               if (string.substr(offset, element.length) === element || string.substr(offset + match.length - element.length, element.length) === element) {
                 return match;
               }
@@ -105,7 +103,7 @@ function plugin(options) {
   });
 
   function fmtPath(base, filePath) {
-    var newPath = path.relative(base, filePath);
+    const newPath = path.relative(base, filePath);
 
     return canonicalizeUri(newPath);
   }

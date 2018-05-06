@@ -2,36 +2,36 @@
 
 'use strict';
 
-var assert = require('assert');
-var filter = require('gulp-filter');
-var Vinyl = require('vinyl');
-var path = require('path');
-var rev = require('gulp-rev');
-var es = require('event-stream');
+const assert = require('assert');
+const filter = require('gulp-filter');
+const Vinyl = require('vinyl');
+const path = require('path');
+const rev = require('gulp-rev');
+const es = require('event-stream');
 
-var revRewrite = require('./index');
-var utils = require('./utils');
+const revRewrite = require('./index');
+const utils = require('./utils');
 
-var svgFileBody   = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg"></svg>';
-var cssFileBody   = '@font-face { font-family: \'test\'; src: url(\'/fonts/font.svg\'); }\nbody { color: red; }';
-var jsFileBody   = 'console.log("Hello world"); //# sourceMappingURL=app.js.map';
-var htmlFileBody  = '<html><head><link rel="stylesheet" href="/css/style.css" /></head><body><img src="images/image.png" /><img src="images/image.png" /></body></html>';
+const svgFileBody   = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg"></svg>';
+const cssFileBody   = '@font-face { font-family: \'test\'; src: url(\'/fonts/font.svg\'); }\nbody { color: red; }';
+const jsFileBody   = 'console.log("Hello world"); //# sourceMappingURL=app.js.map';
+const htmlFileBody  = '<html><head><link rel="stylesheet" href="/css/style.css" /></head><body><img src="images/image.png" /><img src="images/image.png" /></body></html>';
 
 it('should by default replace filenames in .css and .html files', function (cb) {
-  var filesToRevFilter = filter(['**/*.css', '**/*.svg', '**/*.png'], {restore: true});
+  const filesToRevFilter = filter(['**/*.css', '**/*.svg', '**/*.png'], {restore: true});
 
-  var stream = filesToRevFilter
+  const stream = filesToRevFilter
     .pipe(rev())
     .pipe(filesToRevFilter.restore)
     .pipe(revRewrite());
 
-  var fileCount = 0;
-  var unreplacedCSSFilePattern = /style\.css/;
-  var unreplacedSVGFilePattern = /font\.svg/;
-  var unreplacedPNGFilePattern = /image\.png/;
+  let fileCount = 0;
+  const unreplacedCSSFilePattern = /style\.css/;
+  const unreplacedSVGFilePattern = /font\.svg/;
+  const unreplacedPNGFilePattern = /image\.png/;
   stream.on('data', function(file) {
-    var contents = file.contents.toString();
-    var extension = path.extname(file.path);
+    const contents = file.contents.toString();
+    const extension = path.extname(file.path);
 
     if (extension === '.html') {
       assert(
@@ -82,17 +82,17 @@ it('should by default replace filenames in .css and .html files', function (cb) 
 });
 
 it('should not replace filenames in extensions not in replaceInExtensions', function (cb) {
-  var filesToRevFilter = filter(['**/*.css'], {restore: true});
+  const filesToRevFilter = filter(['**/*.css'], {restore: true});
 
-  var stream = filesToRevFilter
+  const stream = filesToRevFilter
     .pipe(rev())
     .pipe(filesToRevFilter.restore)
     .pipe(revRewrite({replaceInExtensions: ['.svg']}));
 
-  var unreplacedCSSFilePattern = /style\.css/;
+  const unreplacedCSSFilePattern = /style\.css/;
   stream.on('data', function(file) {
-    var contents = file.contents.toString();
-    var extension = path.extname(file.path);
+    const contents = file.contents.toString();
+    const extension = path.extname(file.path);
 
     if (extension === '.html') {
       assert(
@@ -118,9 +118,9 @@ it('should not replace filenames in extensions not in replaceInExtensions', func
 });
 
 it('should not replace filenames contained in longer filenames', function(cb) {
-  var css = '@font-face { src:url(\'font.woff2\'), url(\'font.woff\'), url(\'myfont.woff\'); }';
+  const css = '@font-face { src:url(\'font.woff2\'), url(\'font.woff\'), url(\'myfont.woff\'); }';
 
-  var manifest = es.readArray([
+  const manifest = es.readArray([
     new Vinyl({
       path: 'rev-manifest.json',
       contents: new Buffer(JSON.stringify({
@@ -131,10 +131,10 @@ it('should not replace filenames contained in longer filenames', function(cb) {
     })
   ]);
 
-  var stream = revRewrite({ manifest: manifest });
+  const stream = revRewrite({ manifest: manifest });
 
   stream.on('data', function(file) {
-    var content = file.contents.toString();
+    const content = file.contents.toString();
 
     assert.equal(content, "@font-face { src:url('font.woff2?v=c6d1b13464'), url('font.woff?v=f56bc5932b'), url('myfont.woff?v=d98ag4566d'); }");
   });
@@ -152,17 +152,17 @@ it('should not replace filenames contained in longer filenames', function(cb) {
 });
 
 it('should not canonicalize URIs when option is off', function (cb) {
-  var filesToRevFilter = filter(['**/*.css'], {restore: true});
+  const filesToRevFilter = filter(['**/*.css'], {restore: true});
 
-  var stream = filesToRevFilter
+  const stream = filesToRevFilter
     .pipe(rev())
     .pipe(filesToRevFilter.restore)
     .pipe(revRewrite({canonicalUris: false}));
 
-  var unreplacedCSSFilePattern = /style\.css/;
+  const unreplacedCSSFilePattern = /style\.css/;
   stream.on('data', function(file) {
-    var contents = file.contents.toString();
-    var extension = path.extname(file.path);
+    const contents = file.contents.toString();
+    const extension = path.extname(file.path);
 
     if (extension === '.html') {
       assert(
@@ -189,17 +189,17 @@ it('should not canonicalize URIs when option is off', function (cb) {
 
 
 it('should add prefix to path', function (cb) {
-  var filesToRevFilter = filter(['**/*.css'], {restore: true});
+  const filesToRevFilter = filter(['**/*.css'], {restore: true});
 
-  var stream = filesToRevFilter
+  const stream = filesToRevFilter
     .pipe(rev())
     .pipe(filesToRevFilter.restore)
     .pipe(revRewrite({prefix: 'http://example.com'}));
 
-  var replacedCSSFilePattern = /"http:\/\/example\.com\/css\/style-[^\.]+\.css"/;
+  const replacedCSSFilePattern = /"http:\/\/example\.com\/css\/style-[^\.]+\.css"/;
   stream.on('data', function(file) {
-    var contents = file.contents.toString();
-    var extension = path.extname(file.path);
+    const contents = file.contents.toString();
+    const extension = path.extname(file.path);
     if (extension === '.html') {
       assert(
         replacedCSSFilePattern.test(contents),
@@ -224,12 +224,12 @@ it('should add prefix to path', function (cb) {
 });
 
 it('should stop at first longest replace', function(cb) {
-  var jsFileBody = 'var loadFile = "nopestyle.css"';
-  var replacedJsFileBody = 'var loadFile = "nopestyle-19269897ba.css"';
+  const jsFileBody = 'const loadFile = "nopestyle.css"';
+  const replacedJsFileBody = 'const loadFile = "nopestyle-19269897ba.css"';
 
-  var filesToRevFilter = filter(['**/*.css'], {restore: true});
+  const filesToRevFilter = filter(['**/*.css'], {restore: true});
 
-  var stream = filesToRevFilter
+  const stream = filesToRevFilter
     .pipe(rev())
     .pipe(filesToRevFilter.restore)
     .pipe(revRewrite({canonicalUris: false}));
@@ -265,7 +265,7 @@ it('should stop at first longest replace', function(cb) {
 
 describe('manifest option', function () {
   it('should replace filenames from manifest files', function (cb) {
-    var manifest = es.readArray([
+    const manifest = es.readArray([
       new Vinyl({
         path: '/project/rev-manifest.json',
         contents: new Buffer(JSON.stringify({
@@ -281,14 +281,14 @@ describe('manifest option', function () {
       })
     ]);
 
-    var stream = revRewrite({manifest: manifest});
+    const stream = revRewrite({manifest: manifest});
 
-    var replacedCSSFilePattern = /style-12345\.css/;
-    var replacedSVGFilePattern = /font-12345\.svg/;
-    var replacedPNGFilePattern = /image-12345\.png/;
+    const replacedCSSFilePattern = /style-12345\.css/;
+    const replacedSVGFilePattern = /font-12345\.svg/;
+    const replacedPNGFilePattern = /image-12345\.png/;
     stream.on('data', function(file) {
-      var contents = file.contents.toString();
-      var extension = path.extname(file.path);
+      const contents = file.contents.toString();
+      const extension = path.extname(file.path);
 
       if (extension === '.html') {
         assert(
@@ -332,7 +332,7 @@ describe('manifest option', function () {
   });
 
   it('should add prefix to path', function (cb) {
-    var manifest = es.readArray([
+    const manifest = es.readArray([
       new Vinyl({
         path: '/project/rev-manifest.json',
         contents: new Buffer(JSON.stringify({
@@ -341,12 +341,12 @@ describe('manifest option', function () {
       })
     ]);
 
-    var stream = revRewrite({prefix: 'http://example.com', manifest: manifest});
+    const stream = revRewrite({prefix: 'http://example.com', manifest: manifest});
 
-    var replacedCSSFilePattern = /"http:\/\/example\.com\/css\/style-12345\.css"/;
+    const replacedCSSFilePattern = /"http:\/\/example\.com\/css\/style-12345\.css"/;
     stream.on('data', function(file) {
-      var contents = file.contents.toString();
-      var extension = path.extname(file.path);
+      const contents = file.contents.toString();
+      const extension = path.extname(file.path);
       if (extension === '.html') {
         assert(
           replacedCSSFilePattern.test(contents),
@@ -369,7 +369,7 @@ describe('manifest option', function () {
 
 describe('utils.byLongestUnreved', function() {
   it('should arrange renames from longest to shortest', function() {
-    var renames = [{
+    const renames = [{
       unreved: 'data/favicon.ico',
       reved: 'data/favicon-15d0f308.ico'
     }, {
@@ -438,7 +438,7 @@ describe('utils.byLongestUnreved', function() {
       reved: 'env/deploy/features-2a501331.json'
     }];
 
-    var expected = [{
+    const expected = [{
       unreved: 'fonts/glyphicons-halflings-regular.woff2',
       reved: 'fonts/glyphicons-halflings-regular-448c34a5.woff2'
     }, {
@@ -513,7 +513,7 @@ describe('utils.byLongestUnreved', function() {
 
 describe('modifyUnreved and modifyReved options', function() {
     it('should modify the names of reved and un-reved files', function(cb) {
-        var manifest = es.readArray([
+        const manifest = es.readArray([
             new Vinyl({
                 path: '/project/rev-manifest.json',
                 contents: new Buffer(JSON.stringify({
@@ -530,18 +530,18 @@ describe('modifyUnreved and modifyReved options', function() {
             return filename;
         }
 
-        var stream = revRewrite({
+        const stream = revRewrite({
             manifest: manifest,
             modifyUnreved: replaceJsIfMap,
             modifyReved: replaceJsIfMap
         });
 
-        var replacedJSMapFilePattern = /sourceMappingURL\=app-12345\.js\.map/;
-        var replacedCSSFilePattern = /css\/style-12345\.css/;
+        const replacedJSMapFilePattern = /sourceMappingURL\=app-12345\.js\.map/;
+        const replacedCSSFilePattern = /css\/style-12345\.css/;
 
         stream.on('data', function(file) {
-            var contents = file.contents.toString();
-            var extension = path.extname(file.path);
+            const contents = file.contents.toString();
+            const extension = path.extname(file.path);
 
             if (extension === '.js') {
                 assert(
