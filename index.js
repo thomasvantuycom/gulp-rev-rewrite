@@ -32,7 +32,7 @@ module.exports = function(options) {
       });
     }
 
-    if (options.replaceInExtensions.indexOf(path.extname(file.path)) > -1) {
+    if (options.replaceInExtensions.includes(path.extname(file.path))) {
       // file should be searched for replaces
       cache.push(file);
     } else {
@@ -76,7 +76,7 @@ module.exports = function(options) {
           const containingUnreved = [];
           for (let i = 0; i < index; i+=1){
             const longerUnreved = options.modifyUnreved ? options.modifyUnreved(renames[i].unreved) : renames[i].unreved;
-            if(longerUnreved.indexOf(unreved) !== -1){
+            if(longerUnreved.includes(unreved)){
               containingUnreved.push(longerUnreved);
             }
           }
