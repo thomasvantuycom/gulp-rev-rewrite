@@ -13,15 +13,7 @@ function plugin(options) {
   var renames = [];
   var cache = [];
 
-  options = options || {};
-
-  if (typeof options.canonicalUris === 'undefined') {
-    options.canonicalUris = true;
-  }
-
-  options.prefix = options.prefix || '';
-
-  options.replaceInExtensions = options.replaceInExtensions || ['.js', '.css', '.html', '.hbs'];
+  options = Object.assign({ canonicalUris: true, prefix: '', replaceInExtensions: ['.js', '.css', '.html', '.hbs'] }, options);
 
   return through.obj(function collectRevs(file, enc, cb) {
     if (file.isNull()) {
