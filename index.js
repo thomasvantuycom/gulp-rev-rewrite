@@ -94,7 +94,7 @@ module.exports = function(options) {
           }
         });
 
-        file.contents = new Buffer(contents);
+        file.contents = Buffer.from(contents);
         stream.push(file);
       });
 

@@ -63,19 +63,19 @@ it('should by default replace filenames in .css and .html files', function (cb) 
 
   filesToRevFilter.write(new Vinyl({
     path: path.join('css', 'style.css'),
-    contents: new Buffer(cssFileBody)
+    contents: Buffer.from(cssFileBody)
   }));
   filesToRevFilter.write(new Vinyl({
     path: path.join('fonts', 'font.svg'),
-    contents: new Buffer(svgFileBody)
+    contents: Buffer.from(svgFileBody)
   }));
   filesToRevFilter.write(new Vinyl({
     path: 'images/image.png',
-    contents: new Buffer('PNG')
+    contents: Buffer.from('PNG')
   }));
   filesToRevFilter.write(new Vinyl({
     path: 'index.html',
-    contents: new Buffer(htmlFileBody)
+    contents: Buffer.from(htmlFileBody)
   }));
 
   filesToRevFilter.end();
@@ -107,11 +107,11 @@ it('should not replace filenames in extensions not in replaceInExtensions', func
 
   filesToRevFilter.write(new Vinyl({
     path: 'css\\style.css',
-    contents: new Buffer(cssFileBody)
+    contents: Buffer.from(cssFileBody)
   }));
   filesToRevFilter.write(new Vinyl({
     path: 'index.html',
-    contents: new Buffer(htmlFileBody)
+    contents: Buffer.from(htmlFileBody)
   }));
 
   filesToRevFilter.end();
@@ -123,7 +123,7 @@ it('should not replace filenames contained in longer filenames', function(cb) {
   const manifest = es.readArray([
     new Vinyl({
       path: 'rev-manifest.json',
-      contents: new Buffer(JSON.stringify({
+      contents: Buffer.from(JSON.stringify({
         'font.woff': 'font.woff?v=f56bc5932b',
         'font.woff2': 'font.woff2?v=c6d1b13464',
         'myfont.woff': 'myfont.woff?v=d98ag4566d'
@@ -145,7 +145,7 @@ it('should not replace filenames contained in longer filenames', function(cb) {
 
   stream.write(new Vinyl({
     path: 'index.css',
-    contents: new Buffer(css)
+    contents: Buffer.from(css)
   }));
 
   stream.end();
@@ -177,11 +177,11 @@ it('should not canonicalize URIs when option is off', function (cb) {
 
   filesToRevFilter.write(new Vinyl({
     path: 'css\\style.css',
-    contents: new Buffer(cssFileBody)
+    contents: Buffer.from(cssFileBody)
   }));
   filesToRevFilter.write(new Vinyl({
     path: 'index.html',
-    contents: new Buffer(htmlFileBody)
+    contents: Buffer.from(htmlFileBody)
   }));
 
   filesToRevFilter.end();
@@ -213,11 +213,11 @@ it('should add prefix to path', function (cb) {
 
   filesToRevFilter.write(new Vinyl({
     path: 'css/style.css',
-    contents: new Buffer(cssFileBody)
+    contents: Buffer.from(cssFileBody)
   }));
   filesToRevFilter.write(new Vinyl({
     path: 'index.html',
-    contents: new Buffer(htmlFileBody)
+    contents: Buffer.from(htmlFileBody)
   }));
 
   filesToRevFilter.end();
@@ -249,15 +249,15 @@ it('should stop at first longest replace', function(cb) {
 
   filesToRevFilter.write(new Vinyl({
     path: 'style.css',
-    contents: new Buffer(cssFileBody)
+    contents: Buffer.from(cssFileBody)
   }));
   filesToRevFilter.write(new Vinyl({
     path: 'nopestyle.css',
-    contents: new Buffer('boooooo')
+    contents: Buffer.from('boooooo')
   }));
   filesToRevFilter.write(new Vinyl({
     path: 'script.js',
-    contents: new Buffer(jsFileBody)
+    contents: Buffer.from(jsFileBody)
   }));
 
   filesToRevFilter.end();
@@ -268,13 +268,13 @@ describe('manifest option', function () {
     const manifest = es.readArray([
       new Vinyl({
         path: '/project/rev-manifest.json',
-        contents: new Buffer(JSON.stringify({
+        contents: Buffer.from(JSON.stringify({
           '/css/style.css': '/css/style-12345.css'
         }))
       }),
       new Vinyl({
         path: '/project/rev-image-manifest.json',
-        contents: new Buffer(JSON.stringify({
+        contents: Buffer.from(JSON.stringify({
           'images/image.png': 'images/image-12345.png',
           '/fonts/font.svg': '/fonts/font-12345.svg'
         }))
@@ -317,15 +317,15 @@ describe('manifest option', function () {
 
     stream.write(new Vinyl({
       path: path.join('css', 'style.css'),
-      contents: new Buffer(cssFileBody)
+      contents: Buffer.from(cssFileBody)
     }));
     stream.write(new Vinyl({
       path: path.join('fonts', 'font.svg'),
-      contents: new Buffer(svgFileBody)
+      contents: Buffer.from(svgFileBody)
     }));
     stream.write(new Vinyl({
       path: 'index.html',
-      contents: new Buffer(htmlFileBody)
+      contents: Buffer.from(htmlFileBody)
     }));
 
     stream.end();
@@ -335,7 +335,7 @@ describe('manifest option', function () {
     const manifest = es.readArray([
       new Vinyl({
         path: '/project/rev-manifest.json',
-        contents: new Buffer(JSON.stringify({
+        contents: Buffer.from(JSON.stringify({
           '/css/style.css': '/css/style-12345.css'
         }))
       })
@@ -360,7 +360,7 @@ describe('manifest option', function () {
 
     stream.write(new Vinyl({
       path: 'index.html',
-      contents: new Buffer(htmlFileBody)
+      contents: Buffer.from(htmlFileBody)
     }));
 
     stream.end();
@@ -516,7 +516,7 @@ describe('modifyUnreved and modifyReved options', function() {
         const manifest = es.readArray([
             new Vinyl({
                 path: '/project/rev-manifest.json',
-                contents: new Buffer(JSON.stringify({
+                contents: Buffer.from(JSON.stringify({
                     'js/app.js.map': 'js/app-12345.js.map',
                     'css/style.css': 'css/style-12345.css'
                 }))
@@ -562,11 +562,11 @@ describe('modifyUnreved and modifyReved options', function() {
 
         stream.write(new Vinyl({
             path: path.join('js', 'app.js'),
-            contents: new Buffer(jsFileBody)
+            contents: Buffer.from(jsFileBody)
         }));
         stream.write(new Vinyl({
             path: 'index.html',
-            contents: new Buffer(htmlFileBody)
+            contents: Buffer.from(htmlFileBody)
         }));
 
         stream.end();
