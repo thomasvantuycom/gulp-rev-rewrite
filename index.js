@@ -109,8 +109,8 @@ module.exports = function(options) {
   }
 
   function canonicalizeUri(filePath) {
-    if (path.sep !== '/' && options.canonicalUris) {
-      filePath = filePath.split(path.sep).join('/');
+    if (options.canonicalUris) {
+      filePath = filePath.replace(/\\/g, '/');
     }
 
     return filePath;
