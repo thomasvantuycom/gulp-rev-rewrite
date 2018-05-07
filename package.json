@@ -30,14 +30,14 @@
   "license": "MIT",
   "dependencies": {
     "lodash.escaperegexp": "^4.1.2",
-    "plugin-error": "^0.1.2",
+    "plugin-error": "^1.0.1",
     "through2": "^2.0.0"
   },
   "devDependencies": {
     "event-stream": "^3.2.2",
-    "gulp-filter": "^3.0.1",
-    "gulp-rev": "^6.0.1",
-    "mocha": "^2.3.4",
+    "gulp-filter": "^5.1.0",
+    "gulp-rev": "^8.1.1",
+    "mocha": "^5.1.1",
     "semantic-release": "^15.3.1",
     "vinyl": "^2.1.0"
   }

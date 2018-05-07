@@ -1,5 +1,7 @@
 # gulp-rev-rewrite [![Build Status](https://travis-ci.org/TheDancingCode/gulp-rev-rewrite.svg?branch=master)](https://travis-ci.org/TheDancingCode/gulp-rev-rewrite)
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/TheDancingCode/gulp-rev-rewrite.svg)](https://greenkeeper.io/)
+
 > Rewrite occurrences of filenames which have been renamed by gulp-rev
 
 ## Install
