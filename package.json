@@ -1,6 +1,6 @@
 {
   "name": "gulp-rev-rewrite",
-  "version": "1.0.0",
+  "version": "0.0.0-development",
   "description": "Rewrite occurences of filenames which have been renamed by gulp-rev",
   "main": "index.js",
   "repository": {
@@ -8,6 +8,7 @@
     "url": "https://github.com/TheDancingCode/gulp-rev-rewrite.git"
   },
   "scripts": {
+    "semantic-release": "semantic-release",
     "test": "mocha"
   },
   "keywords": [
@@ -37,6 +38,7 @@
     "gulp-filter": "^3.0.1",
     "gulp-rev": "^6.0.1",
     "mocha": "^2.3.4",
+    "semantic-release": "^15.3.1",
     "vinyl": "^2.1.0"
   }
 }

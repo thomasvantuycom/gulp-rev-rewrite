@@ -1,5 +1,16 @@
 language: node_js
+
 node_js:
   - 10
   - 8
   - 6
+
+jobs:
+  include:
+    - stage: release
+      node_js: lts/*
+      script: skip
+      deploy:
+        provider: script
+        skip_cleanup: true,
+        script: npm run semantic-release
