@@ -69,26 +69,18 @@ module.exports = function(options) {
       cache.forEach(function replaceInFile(file) {
         let contents = file.contents.toString();
 
-        renames.forEach(function replaceOnce(rename, index) {
+        renames.forEach(function replaceOnce(rename) {
           const unreved = options.modifyUnreved ? options.modifyUnreved(rename.unreved) : rename.unreved;
           const reved = options.modifyReved ? options.modifyReved(rename.reved) : rename.reved;
-          const regexp = new RegExp(escapeRegExp(unreved), 'g');
-          const containingUnreved = [];
-          for (let i = 0; i < index; i+=1){
-            const longerUnreved = options.modifyUnreved ? options.modifyUnreved(renames[i].unreved) : renames[i].unreved;
-            if(longerUnreved.includes(unreved)){
-              containingUnreved.push(longerUnreved);
-            }
-          }
-          contents = contents.replace(regexp, function(match, offset, string){
-            for(let i = 0; i < containingUnreved.length; i+=1){
-              const element = containingUnreved[i];
-              if (string.substr(offset, element.length) === element || string.substr(offset + match.length - element.length, element.length) === element) {
-                return match;
-              }
-            }
-            return reved;
-          })
+
+          const FRONT_DELIMITERS = ['"', '\'', '\s', '(', '/', '='];
+          const BACK_DELIMITERS = ['"', '\'', '\s', ')', '\\', '?', '#'];
+
+          const regexp = new RegExp(`([${FRONT_DELIMITERS.join('')}]|^)(${escapeRegExp(unreved)})([${BACK_DELIMITERS.join('')}]|$)`, 'g');
+
+          contents = contents.replace(regexp, (match, frontDelimiter, filename, backDelimiter) => `${frontDelimiter}${reved}${backDelimiter}`
+          )
+
           if (options.prefix) {
             contents = contents.split('/' + options.prefix).join(options.prefix + '/');
           }
