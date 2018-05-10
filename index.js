@@ -5,6 +5,7 @@ const path = require('path');
 const PluginError = require('plugin-error');
 const through = require('through2');
 
+const replace = require('./lib/replace');
 const utils = require('./utils');
 
 module.exports = function(options) {
@@ -62,31 +63,22 @@ module.exports = function(options) {
     }
 
     function replaceContents() {
-      renames = renames.sort(utils.byLongestUnreved);
+      renames = renames.map(entry => {
+        const unreved = options.modifyUnreved ? options.modifyUnreved(entry.unreved) : entry.unreved;
+        const reved = options.modifyReved ? options.modifyUnreved(entry.reved) : entry.reved;
+        return {unreved, reved};
+      }).sort(utils.byLongestUnreved);
 
       // Once we have a full list of renames, search/replace in the cached
       // files and push them through.
       cache.forEach(function replaceInFile(file) {
-        let contents = file.contents.toString();
-
-        renames.forEach(function replaceOnce(rename) {
-          const unreved = options.modifyUnreved ? options.modifyUnreved(rename.unreved) : rename.unreved;
-          const reved = options.modifyReved ? options.modifyReved(rename.reved) : rename.reved;
-
-          const FRONT_DELIMITERS = ['"', '\'', '\s', '(', '/', '='];
-          const BACK_DELIMITERS = ['"', '\'', '\s', ')', '\\', '?', '#'];
-
-          const regexp = new RegExp(`([${FRONT_DELIMITERS.join('')}]|^)(${escapeRegExp(unreved)})([${BACK_DELIMITERS.join('')}]|$)`, 'g');
-
-          contents = contents.replace(regexp, (match, frontDelimiter, filename, backDelimiter) => `${frontDelimiter}${reved}${backDelimiter}`
-          )
-
-          if (options.prefix) {
-            contents = contents.split('/' + options.prefix).join(options.prefix + '/');
-          }
-        });
-
-        file.contents = Buffer.from(contents);
+        const contents = file.contents.toString();
+        let newContents = replace(contents, renames);
+        
+        if (options.prefix) {
+          newContents = newContents.split('/' + options.prefix).join(options.prefix + '/');
+        }
+        file.contents = Buffer.from(newContents);
         stream.push(file);
       });
 
