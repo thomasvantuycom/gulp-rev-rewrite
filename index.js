@@ -6,7 +6,7 @@ const PluginError = require('plugin-error');
 const through = require('through2');
 
 const replace = require('./lib/replace');
-const utils = require('./utils');
+const utils = require('./lib/utils');
 
 module.exports = function(options) {
   let renames = [];
