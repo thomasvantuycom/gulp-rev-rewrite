@@ -9,7 +9,7 @@
   },
   "scripts": {
     "semantic-release": "semantic-release",
-    "test": "mocha"
+    "test": "ava"
   },
   "keywords": [
     "gulpplugin",
@@ -34,10 +34,10 @@
     "through2": "^2.0.0"
   },
   "devDependencies": {
+    "ava": "1.0.0-beta.4",
     "event-stream": "^3.2.2",
-    "gulp-filter": "^5.1.0",
     "gulp-rev": "^8.1.1",
-    "mocha": "^5.1.1",
+    "p-event": "^1.3.0",
     "semantic-release": "^15.3.1",
     "vinyl": "^2.1.0"
   }
