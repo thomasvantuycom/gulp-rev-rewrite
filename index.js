@@ -6,7 +6,6 @@ const PluginError = require('plugin-error');
 const through = require('through2');
 
 const replace = require('./lib/replace');
-const utils = require('./lib/utils');
 
 module.exports = function(options) {
   let renames = [];
@@ -67,7 +66,7 @@ module.exports = function(options) {
         const unreved = options.modifyUnreved ? options.modifyUnreved(entry.unreved) : entry.unreved;
         const reved = options.modifyReved ? options.modifyReved(entry.reved) : entry.reved;
         return {unreved, reved};
-      }).sort(utils.byLongestUnreved);
+      });
 
       // Once we have a full list of renames, search/replace in the cached
       // files and push them through.
