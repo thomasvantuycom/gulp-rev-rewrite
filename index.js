@@ -65,7 +65,7 @@ module.exports = function(options) {
     function replaceContents() {
       renames = renames.map(entry => {
         const unreved = options.modifyUnreved ? options.modifyUnreved(entry.unreved) : entry.unreved;
-        const reved = options.modifyReved ? options.modifyUnreved(entry.reved) : entry.reved;
+        const reved = options.modifyReved ? options.modifyReved(entry.reved) : entry.reved;
         return {unreved, reved};
       }).sort(utils.byLongestUnreved);
 
