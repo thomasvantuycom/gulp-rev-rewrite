@@ -2,6 +2,8 @@
 
 > Rewrite occurrences of filenames which have been renamed by gulp-rev
 
+**This plugin is an improved and maintained fork of [gulp-rev-replace](https://github.com/jamesknelson/gulp-rev-replace).**
+
 ## Install
 
 ```
