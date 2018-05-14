@@ -9,7 +9,7 @@
   },
   "scripts": {
     "semantic-release": "semantic-release",
-    "test": "ava"
+    "test": "xo && ava"
   },
   "keywords": [
     "gulpplugin",
@@ -39,6 +39,7 @@
     "gulp-rev": "^8.1.1",
     "p-event": "^1.3.0",
     "semantic-release": "^15.3.1",
-    "vinyl": "^2.1.0"
+    "vinyl": "^2.1.0",
+    "xo": "^0.21.0"
   }
 }
