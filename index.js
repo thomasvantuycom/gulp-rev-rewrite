@@ -11,7 +11,7 @@ module.exports = function(options) {
   let renames = [];
   const cache = [];
 
-  options = Object.assign({ canonicalUris: true, prefix: '', replaceInExtensions: ['.js', '.css', '.html', '.hbs'] }, options);
+  options = Object.assign({ canonicalUris: true, replaceInExtensions: ['.js', '.css', '.html', '.hbs'] }, options);
 
   return through.obj(function collectRevs(file, enc, cb) {
     if (file.isNull()) {
@@ -28,7 +28,7 @@ module.exports = function(options) {
     if (file.revOrigPath) {
       renames.push({
         unreved: fmtPath(file.revOrigBase, file.revOrigPath),
-        reved: options.prefix + fmtPath(file.base, file.path)
+        reved: fmtPath(file.base, file.path)
       });
     }
 
@@ -51,7 +51,7 @@ module.exports = function(options) {
         Object.keys(manifest).forEach(function (srcFile) {
           renames.push({
             unreved: canonicalizeUri(srcFile),
-            reved: options.prefix + canonicalizeUri(manifest[srcFile])
+            reved: canonicalizeUri(manifest[srcFile])
           });
         });
       });
@@ -63,6 +63,10 @@ module.exports = function(options) {
 
     function replaceContents() {
       renames = renames.map(entry => {
+        const unreved = entry.unreved;
+        const reved = options.prefix ? prefixPath(entry.reved, options.prefix) : entry.reved;
+        return { unreved, reved }
+      }).map(entry => {
         const unreved = options.modifyUnreved ? options.modifyUnreved(entry.unreved) : entry.unreved;
         const reved = options.modifyReved ? options.modifyReved(entry.reved) : entry.reved;
         return {unreved, reved};
@@ -75,7 +79,7 @@ module.exports = function(options) {
         let newContents = replace(contents, renames);
         
         if (options.prefix) {
-          newContents = newContents.split('/' + options.prefix).join(options.prefix + '/');
+          newContents = newContents.split('/' + options.prefix).join(options.prefix);
         }
         file.contents = Buffer.from(newContents);
         stream.push(file);
@@ -97,5 +101,15 @@ module.exports = function(options) {
     }
 
     return filePath;
+  }
+
+  function prefixPath(filePath, prefix) {
+    if (filePath.startsWith('/') && prefix.endsWith('/')) {
+      return `${prefix}${filePath.substr(1)}`;
+    } else if (!filePath.startsWith('/') && !prefix.endsWith('/')) {
+      return `${prefix}/${filePath}`;
+    } else {
+      return `${prefix}${filePath}`;
+    }
   }
 }

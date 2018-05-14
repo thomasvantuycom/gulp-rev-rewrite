@@ -95,8 +95,6 @@ Only substitute in new filenames in files of these types.
 
 Type: `string`
 
-Default: ``
-
 Add the prefix string to each replacement.
 
 #### options.manifest
