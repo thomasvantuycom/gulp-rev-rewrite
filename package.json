@@ -19,6 +19,10 @@
     "replace",
     "asset"
   ],
+  "files": [
+    "index.js",
+    "lib"
+  ],
   "author": {
     "name": "Thomas Vantuycom",
     "email": "thomasvantuycom@protonmail.com",
