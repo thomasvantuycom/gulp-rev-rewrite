@@ -110,8 +110,7 @@ Read JSON manifests written out by `rev`. Allows replacing filenames that were
 
 Type: `Function`
 
-Modify the name of the unreved/reved files before using them. The filename is
-passed to the function as the first argument.
+Modify the name of the unreved/reved files before using them. The function receives the unreved/reved filename as the first argument, and the [Vinyl](https://github.com/gulpjs/vinyl#instance-properties) object of the current file as the optional second argument.
 
 For example, if in your manifest you have:
 

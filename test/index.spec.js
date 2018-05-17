@@ -156,42 +156,56 @@ test('allows prefixing reved filenames', async t => {
 	t.true(contents.includes('https://www.example.com/image-d41d8cd98f.png'));
 });
 
-test('allows modifying unreved filenames', async t => {
-	t.plan(2);
+test.cb('allows modifying unreved filenames', t => {
+	t.plan(3);
 
-	const modifyUnreved = filename => `/${filename}`;
+	const modifyUnreved = (unreved, file) => file.extname === '.html' ? `/${unreved}` : `${unreved}`;
 
 	const stream = revRewrite({
 		modifyUnreved,
 		manifest: createManifest()
 	});
-	const data = pEvent(stream, 'data');
 
+	stream.on('data', file => {
+		const contents = file.contents.toString();
+		if (file.extname === '.html') {
+			t.true(contents.includes('css/style-81a53f7d04.css'));
+			t.false(contents.includes('image-d41d8cd98f.png'));
+		} else {
+			t.true(contents.includes('image-d41d8cd98f.png'));
+		}
+	});
+
+	stream.on('end', t.end);
+
+	stream.write(createFile('style.css', cssFileBody));
 	stream.end(createFile('index.html', htmlFileBody));
-
-	const file = await data;
-	const contents = file.contents.toString();
-	t.true(contents.includes('css/style-81a53f7d04.css'));
-	t.false(contents.includes('image-d41d8cd98f.png'));
 });
 
-test('allows modifying reved filenames', async t => {
-	t.plan(2);
+test.cb('allows modifying reved filenames', t => {
+	t.plan(3);
 
-	const modifyReved = filename => `folder/${filename}`;
+	const modifyReved = (reved, file) => file.extname === '.html' ? `assets/${reved}` : `../${reved}`;
 
 	const stream = revRewrite({
 		modifyReved,
 		manifest: createManifest()
 	});
-	const data = pEvent(stream, 'data');
 
+	stream.on('data', file => {
+		const contents = file.contents.toString();
+		if (file.extname === '.html') {
+			t.true(contents.includes('assets/css/style-81a53f7d04.css'));
+			t.true(contents.includes('assets/image-d41d8cd98f.png'));
+		} else {
+			t.true(contents.includes('../image-d41d8cd98f.png'));
+		}
+	});
+
+	stream.on('end', t.end);
+
+	stream.write(createFile('style.css', cssFileBody));
 	stream.end(createFile('index.html', htmlFileBody));
-
-	const file = await data;
-	const contents = file.contents.toString();
-	t.true(contents.includes('folder/css/style-81a53f7d04.css'));
-	t.true(contents.includes('folder/image-d41d8cd98f.png'));
 });
 
 test('does not replace false positives', async t => {

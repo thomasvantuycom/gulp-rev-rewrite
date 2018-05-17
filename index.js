@@ -64,17 +64,19 @@ module.exports = function (options) {
 				const {unreved} = entry;
 				const reved = options.prefix ? prefixPath(entry.reved, options.prefix) : entry.reved;
 				return {unreved, reved};
-			}).map(entry => {
-				const unreved = options.modifyUnreved ? options.modifyUnreved(entry.unreved) : entry.unreved;
-				const reved = options.modifyReved ? options.modifyReved(entry.reved) : entry.reved;
-				return {unreved, reved};
 			});
 
 			// Once we have a full list of renames, search/replace in the cached
 			// files and push them through.
 			cache.forEach(file => {
+				const modifiedRenames = renames.map(entry => {
+					const unreved = options.modifyUnreved ? options.modifyUnreved(entry.unreved, file) : entry.unreved;
+					const reved = options.modifyReved ? options.modifyReved(entry.reved, file) : entry.reved;
+					return {unreved, reved};
+				});
+
 				const contents = file.contents.toString();
-				let newContents = replace(contents, renames);
+				let newContents = replace(contents, modifiedRenames);
 
 				if (options.prefix) {
 					newContents = newContents.split('/' + options.prefix).join(options.prefix);
