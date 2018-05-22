@@ -82,10 +82,10 @@ test('fragment identifiers', t => {
 });
 
 test('relative paths', t => {
-	const input = 'body { background: url("../icon.svg#fragment"); }';
+	const input = 'body { background: url("../images/icon.svg#fragment"); }';
 	const expected =
-    'body { background: url("../icon-d41d8cd98f.svg#fragment"); }';
-	const output = replace(input, renames, 'images/test.css');
+    'body { background: url("../images/icon-d41d8cd98f.svg#fragment"); }';
+	const output = replace(input, renames, 'css/test.css');
 
 	t.is(output, expected);
 });
