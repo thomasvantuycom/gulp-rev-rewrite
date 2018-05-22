@@ -81,6 +81,15 @@ test('fragment identifiers', t => {
 	t.is(output, expected);
 });
 
+test('relative paths', t => {
+	const input = 'body { background: url("../icon.svg#fragment"); }';
+	const expected =
+    'body { background: url("../icon-d41d8cd98f.svg#fragment"); }';
+	const output = replace(input, renames, 'images/test.css');
+
+	t.is(output, expected);
+});
+
 test('equality signs', t => {
 	const input = '/*# sourceMappingURL=style.css.map */';
 	const expected = '/*# sourceMappingURL=style-98adc164tm.css.map */';
