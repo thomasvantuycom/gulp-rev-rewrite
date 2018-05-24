@@ -96,3 +96,11 @@ test('file beginning and end', t => {
 
 	t.is(output, expected);
 });
+
+test('commas', t => {
+	const input = '<img srcset="images/icon.svg, images/icon-HD.svg 2x"><img srcset="images/icon-HD.svg 2x ,images/icon.svg">';
+	const expected = '<img srcset="images/icon-d41d8cd98f.svg, images/icon-HD.svg 2x"><img srcset="images/icon-HD.svg 2x ,images/icon-d41d8cd98f.svg">';
+	const output = replace(input, renames);
+
+	t.is(output, expected);
+});
