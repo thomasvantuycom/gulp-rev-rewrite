@@ -81,6 +81,13 @@ Default: `['.js', '.css', '.html', '.hbs']`
 
 Only substitute in new filenames in files of these types.
 
+##### replaceRelative
+
+Type: `Boolean`<br>
+Default: `true`
+
+Replace relative files like `url(../image/foo.jpg)` in files with reved filename.
+
 ##### prefix
 
 Type: `String`

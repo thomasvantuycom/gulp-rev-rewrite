@@ -10,7 +10,7 @@ module.exports = function (options) {
 	let renames = [];
 	const cache = [];
 
-	options = Object.assign({canonicalUris: true, replaceInExtensions: ['.js', '.css', '.html', '.hbs']}, options);
+	options = Object.assign({canonicalUris: true, replaceInExtensions: ['.js', '.css', '.html', '.hbs'], replaceRelative: true}, options);
 
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {
@@ -76,7 +76,9 @@ module.exports = function (options) {
 				});
 
 				const contents = file.contents.toString();
-				let newContents = replace(contents, modifiedRenames);
+
+				const filePath = options.replaceRelative ? fmtPath(file.base, file.path) : undefined;
+				let newContents = replace(contents, modifiedRenames, filePath);
 
 				if (options.prefix) {
 					newContents = newContents.split('/' + options.prefix).join(options.prefix);
