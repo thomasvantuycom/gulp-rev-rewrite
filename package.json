@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "ava": "1.0.0-beta.4",
-    "event-stream": "^4.0.0",
+    "event-stream": "3.3.4",
     "gulp-rev": "^9.0.0",
     "p-event": "^2.0.0",
     "semantic-release": "^15.3.1",
