@@ -81,6 +81,7 @@ module.exports = function (options) {
 				if (options.prefix) {
 					newContents = newContents.split('/' + options.prefix).join(options.prefix);
 				}
+
 				file.contents = Buffer.from(newContents);
 				stream.push(file);
 			});
@@ -107,9 +108,11 @@ module.exports = function (options) {
 		if (filePath.startsWith('/') && prefix.endsWith('/')) {
 			return `${prefix}${filePath.substr(1)}`;
 		}
+
 		if (!filePath.startsWith('/') && !prefix.endsWith('/')) {
 			return `${prefix}/${filePath}`;
 		}
+
 		return `${prefix}${filePath}`;
 	}
 };
