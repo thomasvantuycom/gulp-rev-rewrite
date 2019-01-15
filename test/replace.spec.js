@@ -72,6 +72,15 @@ test('query strings', t => {
 	t.is(output, expected);
 });
 
+test('query parameters', t => {
+	const input = '<img src="https://assets.cdn.com/myaccount/myimage.jpg?blend=https%3A%2F%2Fwww.example.com%2Fimages%2Fanotherimage.jpg">';
+	const expected = '<img src="https://assets.cdn.com/myaccount/myimage.jpg?blend=https%3A%2F%2Fwww.example.com%2Fimages%2Fanotherimage-0b61c88d26.jpg">';
+	const customRenames = [{unreved: 'anotherimage.jpg', reved: 'anotherimage-0b61c88d26.jpg'}];
+	const output = replace(input, customRenames);
+
+	t.is(output, expected);
+});
+
 test('fragment identifiers', t => {
 	const input = 'body { background: url("images/icon.svg#fragment"); }';
 	const expected =
