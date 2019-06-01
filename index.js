@@ -10,7 +10,7 @@ module.exports = function (options) {
 	let renames = [];
 	const cache = [];
 
-	options = Object.assign({canonicalUris: true, replaceInExtensions: ['.js', '.css', '.html', '.hbs']}, options);
+	options = {canonicalUris: true, replaceInExtensions: ['.js', '.css', '.html', '.hbs'], ...options};
 
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {

@@ -29,7 +29,7 @@
     "url": "https://github.com/TheDancingCode"
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=8"
   },
   "license": "MIT",
   "dependencies": {
