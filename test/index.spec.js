@@ -60,12 +60,20 @@ test('reads and replaces reved filenames from a manifest', async t => {
 	t.true(contents.includes('image-d41d8cd98f.png'));
 });
 
-test.cb('by default replaces in .css, .html, .js and .hbs files', t => {
+test('by default replaces in .css, .html, .js and .hbs files', async t => {
 	t.plan(5);
 
 	const stream = revRewrite({manifest: createManifest()});
+	const data = pEvent.multiple(stream, 'data', {count: 5});
 
-	stream.on('data', file => {
+	stream.write(createFile('index.html', htmlFileBody));
+	stream.write(createFile('style.css', cssFileBody));
+	stream.write(createFile('script.js', jsFileBody));
+	stream.write(createFile('partial.hbs', hbsFileBody));
+	stream.end(createFile('data.json', jsonFileBody));
+
+	const files = await data;
+	files.forEach(file => {
 		const contents = file.contents.toString();
 		if (file.extname === '.json') {
 			t.false(contents.includes('image-d41d8cd98f.png'));
@@ -73,17 +81,9 @@ test.cb('by default replaces in .css, .html, .js and .hbs files', t => {
 			t.true(contents.includes('image-d41d8cd98f.png'));
 		}
 	});
-
-	stream.on('end', t.end);
-
-	stream.write(createFile('index.html', htmlFileBody));
-	stream.write(createFile('style.css', cssFileBody));
-	stream.write(createFile('script.js', jsFileBody));
-	stream.write(createFile('partial.hbs', hbsFileBody));
-	stream.end(createFile('data.json', jsonFileBody));
 });
 
-test.cb('allows overriding extensions to be searched', t => {
+test('allows overriding extensions to be searched', async t => {
 	t.plan(5);
 
 	const replaceInExtensions = ['.json'];
@@ -91,8 +91,16 @@ test.cb('allows overriding extensions to be searched', t => {
 		replaceInExtensions,
 		manifest: createManifest()
 	});
+	const data = pEvent.multiple(stream, 'data', {count: 5});
 
-	stream.on('data', file => {
+	stream.write(createFile('index.html', htmlFileBody));
+	stream.write(createFile('style.css', cssFileBody));
+	stream.write(createFile('script.js', jsFileBody));
+	stream.write(createFile('partial.hbs', hbsFileBody));
+	stream.end(createFile('data.json', jsonFileBody));
+
+	const files = await data;
+	files.forEach(file => {
 		const contents = file.contents.toString();
 		if (file.extname === '.json') {
 			t.true(contents.includes('image-d41d8cd98f.png'));
@@ -100,14 +108,6 @@ test.cb('allows overriding extensions to be searched', t => {
 			t.false(contents.includes('image-d41d8cd98f.png'));
 		}
 	});
-
-	stream.on('end', t.end);
-
-	stream.write(createFile('index.html', htmlFileBody));
-	stream.write(createFile('style.css', cssFileBody));
-	stream.write(createFile('script.js', jsFileBody));
-	stream.write(createFile('partial.hbs', hbsFileBody));
-	stream.end(createFile('data.json', jsonFileBody));
 });
 
 test('by default canonicalizes URIs', async t => {
@@ -156,7 +156,7 @@ test('allows prefixing reved filenames', async t => {
 	t.true(contents.includes('https://www.example.com/image-d41d8cd98f.png'));
 });
 
-test.cb('allows modifying unreved filenames', t => {
+test('allows modifying unreved filenames', async t => {
 	t.plan(3);
 
 	const modifyUnreved = (unreved, file) => file.extname === '.html' ? `/${unreved}` : `${unreved}`;
@@ -165,8 +165,13 @@ test.cb('allows modifying unreved filenames', t => {
 		modifyUnreved,
 		manifest: createManifest()
 	});
+	const data = pEvent.multiple(stream, 'data', {count: 2});
 
-	stream.on('data', file => {
+	stream.write(createFile('style.css', cssFileBody));
+	stream.end(createFile('index.html', htmlFileBody));
+
+	const files = await data;
+	files.forEach(file => {
 		const contents = file.contents.toString();
 		if (file.extname === '.html') {
 			t.true(contents.includes('css/style-81a53f7d04.css'));
@@ -175,14 +180,9 @@ test.cb('allows modifying unreved filenames', t => {
 			t.true(contents.includes('image-d41d8cd98f.png'));
 		}
 	});
-
-	stream.on('end', t.end);
-
-	stream.write(createFile('style.css', cssFileBody));
-	stream.end(createFile('index.html', htmlFileBody));
 });
 
-test.cb('allows modifying reved filenames', t => {
+test('allows modifying reved filenames', async t => {
 	t.plan(3);
 
 	const modifyReved = (reved, file) => file.extname === '.html' ? `assets/${reved}` : `../${reved}`;
@@ -191,8 +191,13 @@ test.cb('allows modifying reved filenames', t => {
 		modifyReved,
 		manifest: createManifest()
 	});
+	const data = pEvent.multiple(stream, 'data', {count: 2});
 
-	stream.on('data', file => {
+	stream.write(createFile('style.css', cssFileBody));
+	stream.end(createFile('index.html', htmlFileBody));
+
+	const files = await data;
+	files.forEach(file => {
 		const contents = file.contents.toString();
 		if (file.extname === '.html') {
 			t.true(contents.includes('assets/css/style-81a53f7d04.css'));
@@ -201,11 +206,6 @@ test.cb('allows modifying reved filenames', t => {
 			t.true(contents.includes('../image-d41d8cd98f.png'));
 		}
 	});
-
-	stream.on('end', t.end);
-
-	stream.write(createFile('style.css', cssFileBody));
-	stream.end(createFile('index.html', htmlFileBody));
 });
 
 test('does not replace false positives', async t => {
