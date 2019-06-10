@@ -2,7 +2,7 @@ import test from 'ava';
 import Vinyl from 'vinyl';
 import pEvent from 'p-event';
 import rev from 'gulp-rev';
-import {readArray} from 'event-stream';
+import intoStream from 'into-stream';
 import revRewrite from '..';
 
 const htmlFileBody =
@@ -19,7 +19,7 @@ const createFile = (path, contents) =>
 	});
 
 const createManifest = () => {
-	return readArray([
+	return intoStream.object(
 		createFile(
 			'rev-manifest.json',
 			JSON.stringify({
@@ -27,7 +27,7 @@ const createManifest = () => {
 				'css\\style.css': 'css\\style-81a53f7d04.css'
 			})
 		)
-	]);
+	);
 };
 
 test('identifies and replaces reved filenames in the stream', async t => {
