@@ -1,49 +1,62 @@
 'use strict';
 
-const path = require('path');
+const {relative} = require('path');
 const PluginError = require('plugin-error');
 const through = require('through2');
 
 const replace = require('./lib/replace');
 
+function relativePath(from, to) {
+	return relative(from, to).replace(/\\/g, '/');
+}
+
+function prefixPath(path, prefix) {
+	if (path.startsWith('/') && prefix.endsWith('/')) {
+		return `${prefix}${path.substr(1)}`;
+	}
+
+	if (!path.startsWith('/') && !prefix.endsWith('/')) {
+		return `${prefix}/${path}`;
+	}
+
+	return `${prefix}${path}`;
+}
+
 module.exports = function (options = {}) {
 	let renames = [];
 	const cache = [];
 
-	return through.obj(function (file, enc, cb) {
+	return through.obj((file, encoding, callback) => {
 		if (file.isNull()) {
-			this.push(file);
-			return cb();
+			return callback(null, file);
 		}
 
 		if (file.isStream()) {
-			this.emit('error', new PluginError('gulp-rev-rewrite', 'Streaming not supported'));
-			return cb();
+			return callback(new PluginError('gulp-rev-rewrite', 'Streaming not supported'));
 		}
 
 		// Collect renames from reved files.
 		if (file.revOrigPath) {
 			renames.push({
-				unreved: fmtPath(file.revOrigBase, file.revOrigPath),
-				reved: fmtPath(file.base, file.path)
+				unreved: relativePath(file.revOrigBase, file.revOrigPath),
+				reved: relativePath(file.base, file.path)
 			});
 		}
 
 		cache.push(file);
-		cb();
-	}, function (cb) {
+
+		callback();
+	}, function (callback) {
 		const stream = this;
 
 		if (options.manifest) {
-			// Read manifest file for the list of renames.
+			// Collect renames from rev-manifest.
 			options.manifest.on('data', file => {
 				const manifest = JSON.parse(file.contents.toString());
-				Object.keys(manifest).forEach(srcFile => {
-					renames.push({
-						unreved: srcFile,
-						reved: manifest[srcFile]
-					});
-				});
+
+				for (const [unreved, reved] of Object.entries(manifest)) {
+					renames.push({unreved, reved});
+				}
 			});
 			options.manifest.on('end', replaceContents);
 		} else {
@@ -51,19 +64,21 @@ module.exports = function (options = {}) {
 		}
 
 		function replaceContents() {
-			renames = renames.map(entry => {
-				const {unreved} = entry;
-				const reved = options.prefix ? prefixPath(entry.reved, options.prefix) : entry.reved;
-				return {unreved, reved};
-			});
+			if (options.prefix) {
+				renames = renames.map(entry => {
+					entry.reved = prefixPath(entry.reved, options.prefix);
+					return entry;
+				});
+			}
 
 			// Once we have a full list of renames, search/replace in the cached
 			// files and push them through.
 			cache.forEach(file => {
 				const modifiedRenames = renames.map(entry => {
-					const unreved = options.modifyUnreved ? options.modifyUnreved(entry.unreved, file) : entry.unreved;
-					const reved = options.modifyReved ? options.modifyReved(entry.reved, file) : entry.reved;
-					return {unreved, reved};
+					const {unreved, reved} = entry;
+					const modifiedUnreved = options.modifyUnreved ? options.modifyUnreved(unreved, file) : unreved;
+					const modifiedReved = options.modifyReved ? options.modifyReved(reved, file) : reved;
+					return {unreved: modifiedUnreved, reved: modifiedReved};
 				});
 
 				const contents = file.contents.toString();
@@ -77,24 +92,7 @@ module.exports = function (options = {}) {
 				stream.push(file);
 			});
 
-			cb();
+			callback();
 		}
 	});
-
-	function fmtPath(base, filePath) {
-		const newPath = path.relative(base, filePath).replace(/\\/g, '/');
-		return newPath;
-	}
-
-	function prefixPath(filePath, prefix) {
-		if (filePath.startsWith('/') && prefix.endsWith('/')) {
-			return `${prefix}${filePath.substr(1)}`;
-		}
-
-		if (!filePath.startsWith('/') && !prefix.endsWith('/')) {
-			return `${prefix}/${filePath}`;
-		}
-
-		return `${prefix}${filePath}`;
-	}
 };
