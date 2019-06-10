@@ -6,11 +6,9 @@ const through = require('through2');
 
 const replace = require('./lib/replace');
 
-module.exports = function (options) {
+module.exports = function (options = {}) {
 	let renames = [];
 	const cache = [];
-
-	options = {replaceInExtensions: ['.js', '.css', '.html', '.hbs'], ...options};
 
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {
@@ -31,14 +29,7 @@ module.exports = function (options) {
 			});
 		}
 
-		if (options.replaceInExtensions.includes(path.extname(file.path))) {
-			// File should be searched for replaces
-			cache.push(file);
-		} else {
-			// Nothing to do with this file
-			this.push(file);
-		}
-
+		cache.push(file);
 		cb();
 	}, function (cb) {
 		const stream = this;

@@ -8,9 +8,6 @@ import revRewrite from '..';
 const htmlFileBody =
   '<link rel="stylesheet" href="/css/style.css"><img src="image.png">';
 const cssFileBody = 'body { background: url("image.png"); }';
-const jsFileBody = 'var path = \'image.png\';';
-const hbsFileBody = '<img src="image.png" alt="{{image.alt}}">';
-const jsonFileBody = JSON.stringify({path: 'image.png'});
 
 const createFile = (path, contents) =>
 	new Vinyl({
@@ -83,56 +80,6 @@ test('reads and replaces reved filenames from a manifest', async t => {
 	const file = await data;
 	const contents = file.contents.toString();
 	t.true(contents.includes('image-d41d8cd98f.png'));
-});
-
-test('by default replaces in .css, .html, .js and .hbs files', async t => {
-	t.plan(5);
-
-	const stream = revRewrite({manifest: createManifest()});
-	const data = pEvent.multiple(stream, 'data', {count: 5});
-
-	stream.write(createFile('index.html', htmlFileBody));
-	stream.write(createFile('style.css', cssFileBody));
-	stream.write(createFile('script.js', jsFileBody));
-	stream.write(createFile('partial.hbs', hbsFileBody));
-	stream.end(createFile('data.json', jsonFileBody));
-
-	const files = await data;
-	files.forEach(file => {
-		const contents = file.contents.toString();
-		if (file.extname === '.json') {
-			t.false(contents.includes('image-d41d8cd98f.png'));
-		} else {
-			t.true(contents.includes('image-d41d8cd98f.png'));
-		}
-	});
-});
-
-test('allows overriding extensions to be searched', async t => {
-	t.plan(5);
-
-	const replaceInExtensions = ['.json'];
-	const stream = revRewrite({
-		replaceInExtensions,
-		manifest: createManifest()
-	});
-	const data = pEvent.multiple(stream, 'data', {count: 5});
-
-	stream.write(createFile('index.html', htmlFileBody));
-	stream.write(createFile('style.css', cssFileBody));
-	stream.write(createFile('script.js', jsFileBody));
-	stream.write(createFile('partial.hbs', hbsFileBody));
-	stream.end(createFile('data.json', jsonFileBody));
-
-	const files = await data;
-	files.forEach(file => {
-		const contents = file.contents.toString();
-		if (file.extname === '.json') {
-			t.true(contents.includes('image-d41d8cd98f.png'));
-		} else {
-			t.false(contents.includes('image-d41d8cd98f.png'));
-		}
-	});
 });
 
 test('allows prefixing reved filenames', async t => {
