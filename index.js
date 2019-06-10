@@ -10,7 +10,7 @@ module.exports = function (options) {
 	let renames = [];
 	const cache = [];
 
-	options = {canonicalUris: true, replaceInExtensions: ['.js', '.css', '.html', '.hbs'], ...options};
+	options = {replaceInExtensions: ['.js', '.css', '.html', '.hbs'], ...options};
 
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {
@@ -49,8 +49,8 @@ module.exports = function (options) {
 				const manifest = JSON.parse(file.contents.toString());
 				Object.keys(manifest).forEach(srcFile => {
 					renames.push({
-						unreved: canonicalizeUri(srcFile),
-						reved: canonicalizeUri(manifest[srcFile])
+						unreved: srcFile,
+						reved: manifest[srcFile]
 					});
 				});
 			});
@@ -91,17 +91,8 @@ module.exports = function (options) {
 	});
 
 	function fmtPath(base, filePath) {
-		const newPath = path.relative(base, filePath);
-
-		return canonicalizeUri(newPath);
-	}
-
-	function canonicalizeUri(filePath) {
-		if (options.canonicalUris) {
-			filePath = filePath.replace(/\\/g, '/');
-		}
-
-		return filePath;
+		const newPath = path.relative(base, filePath).replace(/\\/g, '/');
+		return newPath;
 	}
 
 	function prefixPath(filePath, prefix) {
