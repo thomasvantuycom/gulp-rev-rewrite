@@ -1,6 +1,6 @@
 # gulp-rev-rewrite [![Build Status](https://travis-ci.org/TheDancingCode/gulp-rev-rewrite.svg?branch=master)](https://travis-ci.org/TheDancingCode/gulp-rev-rewrite) [![npm](https://img.shields.io/npm/v/gulp-rev-rewrite.svg)](https://www.npmjs.com/package/gulp-rev-rewrite) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release) [![Greenkeeper badge](https://badges.greenkeeper.io/TheDancingCode/gulp-rev-rewrite.svg)](https://greenkeeper.io/)
 
-> Rewrite occurrences of filenames which have been renamed by gulp-rev
+> Rewrite references to assets revisioned by `gulp-rev`
 
 **This plugin is an improved and maintained fork of [gulp-rev-replace](https://github.com/jamesknelson/gulp-rev-replace).**
 
@@ -14,49 +14,57 @@ Only [LTS and current releases](https://github.com/nodejs/Release#release-schedu
 
 ## Usage
 
-Pipe through a stream with both the revved files and the files containing references to them.
+The most common use pattern consists of two steps:
+
+1. Revision your assets and create an asset manifest.
+2. Collect the revisioned paths from the manifest and rewrite references to them
 
 ```js
-const gulp = require('gulp');
+const { src, dest, series } = require('gulp');
+const rev = require('gulp-rev');
+const revRewrite = require('gulp-rev-rewrite');
+
+// Step 1
+function revision() {
+  return src('dist/assets/**/*.{css,js}')
+    .pipe(rev())
+    .pipe(dest('dist/assets'))
+    .pipe(rev.manifest())
+    .pipe(dest('dist/assets'));
+}
+
+// Step 2
+function rewrite() {
+  const manifest = src('dist/assets/rev-manifest.json');
+
+  return src('dist/**/*.html')
+    .pipe(revRewrite({ manifest }))
+    .pipe(dest('dist'));
+}
+
+exports.default = series(revision, rewrite);
+```
+
+Alternatively, you can combine both steps with the use of `gulp-filter`.
+
+```js
+const { src, dest } = require('gulp');
 const filter = require('gulp-filter');
 const rev = require('gulp-rev');
 const revRewrite = require('gulp-rev-rewrite');
 
-gulp.task('rev', () => {
-  const assetFilter = filter(['**/*', '!**/index.html'], { restore: true });
+function revision() {
+  const assetFilter = filter(['**', '!**/*.html'], { restore: true });
 
-  return gulp.src('src/**')
+  return src('dist/**')
     .pipe(assetFilter)
-    .pipe(rev()) // Rename all files except index.html
+    .pipe(rev()) // Rename all files except html files
     .pipe(assetFilter.restore)
-    .pipe(revRewrite()) // Substitute in new filenames
-    .pipe(gulp.dest('dist'));
-});
-```
+    .pipe(revRewrite())
+    .pipe(dest('dist'));
+}
 
-It is also possible to collect the revisioned filenames from JSON manifests written out by `gulp-rev`. This allows for replacing filenames that were revved prior to the current task.
-
-```js
-const rev = require('gulp-rev');
-const revRewrite = require('gulp-rev-rewrite');
-const revDelete = require('gulp-rev-delete-original');
-
-gulp.task('revision', ['dist:css', 'dist:js'], () => {
-  return gulp.src('dist/**/*.{css,js}')
-    .pipe(rev())
-    .pipe(revDelete()) // Remove the unrevved files
-    .pipe(gulp.dest('dist'))
-    .pipe(rev.manifest())
-    .pipe(gulp.dest('dist'));
-});
-
-gulp.task('revRewrite', ['revision'], function() {
-  const manifest = gulp.src('dist/rev-manifest.json');
-
-  return gulp.src('dist/index.html')
-    .pipe(revRewrite({ manifest }))
-    .pipe(gulp.dest('dist'));
-});
+exports.default = revision;
 ```
 
 ## API
@@ -67,32 +75,17 @@ gulp.task('revRewrite', ['revision'], function() {
 
 Type: `Object`
 
-##### canonicalUris
+##### manifest
 
-Type: `Boolean`<br>
-Default: `true`
+Type: `Stream` (e.g., `gulp.src()`)
 
-Use canonical URIs when replacing filePaths, i.e. use a forward slash (`/`) as the path segment seperator.
-
-##### replaceInExtensions
-
-Type: `Array`<br>
-Default: `['.js', '.css', '.html', '.hbs']`
-
-Only substitute in new filenames in files of these types.
+Read JSON manifests written out by `rev`. Allows replacing filenames that were revisioned prior to the current task.
 
 ##### prefix
 
 Type: `String`
 
 Add a prefix to each replacement.
-
-##### manifest
-
-Type: `Stream` (e.g., `gulp.src()`)
-
-Read JSON manifests written out by `rev`. Allows replacing filenames that were
-revved prior to the current task.
 
 ##### modifyUnreved, modifyReved
 
@@ -111,6 +104,8 @@ are sourcemaps and the references to them are relative, not absolute) you could
 do the following:
 
 ```js
+const { src, dest } = require('gulp');
+
 function replaceJsIfMap(filename) {
   if (filename.includes('.map')) {
     return filename.replace('js/', '');
@@ -118,13 +113,17 @@ function replaceJsIfMap(filename) {
   return filename;
 }
 
-return gulp.src('dist/**/*.js')
-  .pipe(revRewrite({
-      manifest: manifest,
-      modifyUnreved: replaceJsIfMap,
-      modifyReved: replaceJsIfMap
-    }))
-  .pipe(gulp.dest('dist'));
+function rewrite() {
+  return src('dist/**/*.js')
+    .pipe(revRewrite({
+        manifest: src('rev-manifest.json'),
+        modifyUnreved: replaceJsIfMap,
+        modifyReved: replaceJsIfMap
+      }))
+    .pipe(dest('dist'));
+}
+
+exports.default = rewrite;    
 ```
 
 ## License
