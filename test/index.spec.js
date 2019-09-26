@@ -43,7 +43,7 @@ test('identifies and replaces reved filenames in the stream', async t => {
 	files.forEach(file => {
 		const contents = file.contents.toString();
 		if (file.extname === '.html') {
-			t.true(/css\/style-[a-z0-9]{10}\.css/.test(contents));
+			t.regex(contents, /css\/style-[a-z0-9]{10}\.css/);
 		}
 	});
 });

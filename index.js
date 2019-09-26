@@ -12,7 +12,7 @@ function relativePath(from, to) {
 
 function prefixPath(path, prefix) {
 	if (path.startsWith('/') && prefix.endsWith('/')) {
-		return `${prefix}${path.substr(1)}`;
+		return `${prefix}${path.slice(1)}`;
 	}
 
 	if (!path.startsWith('/') && !prefix.endsWith('/')) {
