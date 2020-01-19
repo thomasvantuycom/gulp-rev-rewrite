@@ -38,12 +38,16 @@
     "through2": "^3.0.0"
   },
   "devDependencies": {
-    "ava": "^2.0.0",
+    "@ava/babel": "^1.0.0",
+    "ava": "^3.0.0",
     "gulp-rev": "^9.0.0",
     "into-stream": "^5.1.0",
     "p-event": "^4.1.0",
     "semantic-release": "^16.0.0",
     "vinyl": "^2.1.0",
     "xo": "^0.25.0"
+  },
+  "ava": {
+    "babel": true
   }
 }
