@@ -43,7 +43,7 @@
     "gulp-rev": "^9.0.0",
     "into-stream": "^5.1.0",
     "p-event": "^4.1.0",
-    "semantic-release": "^16.0.0",
+    "semantic-release": "^17.0.0",
     "vinyl": "^2.1.0",
     "xo": "^0.25.0"
   },
