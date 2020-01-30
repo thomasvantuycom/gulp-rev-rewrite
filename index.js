@@ -88,7 +88,10 @@ module.exports = function (options = {}) {
 					newContents = newContents.split('/' + options.prefix).join(options.prefix);
 				}
 
-				file.contents = Buffer.from(newContents);
+				if (newContents !== contents) {
+					file.contents = Buffer.from(newContents);
+				}
+
 				stream.push(file);
 			});
 

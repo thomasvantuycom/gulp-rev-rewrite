@@ -8,11 +8,12 @@ import revRewrite from '..';
 const htmlFileBody =
   '<link rel="stylesheet" href="/css/style.css"><img src="image.png">';
 const cssFileBody = 'body { background: url("image.png"); }';
+const pngFileBody = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
 
-const createFile = (path, contents) =>
+const createFile = (path, contents, encoding = 'utf8') =>
 	new Vinyl({
 		path,
-		contents: Buffer.from(contents)
+		contents: Buffer.from(contents, encoding)
 	});
 
 const createManifest = () => {
@@ -171,4 +172,17 @@ test('does not replace false positives', async t => {
 	const file = await data;
 	const contents = file.contents.toString();
 	t.false(contents.includes('image-d41d8cd98f.png'));
+});
+
+test('does not corrupt binary files', async t => {
+	t.plan(1);
+
+	const stream = revRewrite({manifest: createManifest()});
+	const data = pEvent(stream, 'data');
+
+	stream.end(createFile('image.png', pngFileBody, 'base64'));
+
+	const file = await data;
+	const contents = file.contents.toString('base64');
+	t.is(contents, pngFileBody);
 });
