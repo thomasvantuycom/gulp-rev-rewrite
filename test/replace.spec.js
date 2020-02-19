@@ -115,10 +115,9 @@ test('commas', t => {
 });
 
 test('attributes without quotes', t => {
-	const input = '<img src=https://assets.cdn.com/myaccount/myimage.jpg>';
-	const expected = '<img src=https://assets.cdn.com/myaccount/myimage-0b61c88d26.jpg>';
-	const customRenames = [{unreved: 'myimage.jpg', reved: 'myimage-0b61c88d26.jpg'}];
-	const output = replace(input, customRenames);
+	const input = '<img src=images/icon.svg>';
+	const expected = '<img src=images/icon-d41d8cd98f.svg>';
+	const output = replace(input, renames);
 
 	t.is(output, expected);
 });
