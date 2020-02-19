@@ -113,3 +113,11 @@ test('commas', t => {
 
 	t.is(output, expected);
 });
+
+test('attributes without quotes', t => {
+	const input = '<img src=images/icon.svg>';
+	const expected = '<img src=images/icon-d41d8cd98f.svg>';
+	const output = replace(input, renames);
+
+	t.is(output, expected);
+});
