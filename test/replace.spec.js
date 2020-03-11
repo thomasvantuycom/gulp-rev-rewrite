@@ -13,8 +13,8 @@ const renames = [
 ];
 
 test('single quotes', t => {
-	const input = 'body { background: url(\'images/icon.svg\'); }';
-	const expected = 'body { background: url(\'images/icon-d41d8cd98f.svg\'); }';
+	const input = 'body { background: url(’images/icon.svg’); }';
+	const expected = 'body { background: url(’images/icon-d41d8cd98f.svg’); }';
 	const output = replace(input, renames);
 
 	t.is(output, expected);
@@ -55,9 +55,9 @@ test('slashes', t => {
 
 test('backslashes', t => {
 	const input =
-    'document.querySelector("*[style*=\'background-image: url(\\"images/icon.svg\\")\']");';
+    'document.querySelector("*[style*=’background-image: url(\\"images/icon.svg\\")’]");';
 	const expected =
-    'document.querySelector("*[style*=\'background-image: url(\\"images/icon-d41d8cd98f.svg\\")\']");';
+    'document.querySelector("*[style*=’background-image: url(\\"images/icon-d41d8cd98f.svg\\")’]");';
 	const output = replace(input, renames);
 
 	t.is(output, expected);
