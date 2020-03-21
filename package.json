@@ -8,7 +8,6 @@
     "url": "https://github.com/TheDancingCode/gulp-rev-rewrite.git"
   },
   "scripts": {
-    "semantic-release": "semantic-release",
     "test": "xo && ava"
   },
   "keywords": [
