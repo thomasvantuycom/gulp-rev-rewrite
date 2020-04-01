@@ -54,8 +54,14 @@ module.exports = function (options = {}) {
 			options.manifest.on('data', file => {
 				const manifest = JSON.parse(file.contents.toString());
 
-				for (const [unreved, reved] of Object.entries(manifest)) {
-					renames.push({unreved, reved});
+				if (options.reverse) {
+					for (const [reved, unreved] of Object.entries(manifest)) {
+						renames.push({unreved, reved});
+					}
+				} else {
+					for (const [unreved, reved] of Object.entries(manifest)) {
+						renames.push({unreved, reved});
+					}
 				}
 			});
 			options.manifest.on('end', replaceContents);

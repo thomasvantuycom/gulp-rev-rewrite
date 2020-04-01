@@ -87,6 +87,12 @@ Type: `String`
 
 Add a prefix to each replacement.
 
+##### reverse
+
+Type: `Boolean`
+
+Reverse the filename replacing procedure.
+
 ##### modifyUnreved, modifyReved
 
 Type: `Function`
