@@ -48,5 +48,10 @@
   },
   "ava": {
     "babel": true
+  },
+  "xo": {
+    "rules": {
+      "unicorn/string-content": "off"
+    }
   }
 }
