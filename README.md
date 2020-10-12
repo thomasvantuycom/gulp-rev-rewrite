@@ -45,21 +45,17 @@ function rewrite() {
 exports.default = series(revision, rewrite);
 ```
 
-Alternatively, you can combine both steps with the use of `gulp-filter`.
+Alternatively, you can combine both steps.
 
 ```js
 const { src, dest } = require('gulp');
-const filter = require('gulp-filter');
 const rev = require('gulp-rev');
 const revRewrite = require('gulp-rev-rewrite');
 
 function revision() {
-  const assetFilter = filter(['**', '!**/*.html'], { restore: true });
-
-  return src('dist/**')
-    .pipe(assetFilter)
-    .pipe(rev()) // Rename all files except html files
-    .pipe(assetFilter.restore)
+  return src('dist/**/*.{css,js}')
+    .pipe(rev())
+    .pipe(src('dist/**/*.html'))
     .pipe(revRewrite())
     .pipe(dest('dist'));
 }
