@@ -2,7 +2,6 @@ import test from 'ava';
 import Vinyl from 'vinyl';
 import pEvent from 'p-event';
 import rev from 'gulp-rev';
-import intoStream from 'into-stream';
 import revRewrite from '..';
 
 const htmlFileBody =
@@ -17,15 +16,11 @@ const createFile = (path, contents, encoding = 'utf8') =>
 	});
 
 const createManifest = () => {
-	return intoStream.object(
-		createFile(
-			'rev-manifest.json',
-			JSON.stringify({
-				'image.png': 'image-d41d8cd98f.png',
-				'css/style.css': 'css/style-81a53f7d04.css'
-			})
-		)
-	);
+	const manifest = {
+		'image.png': 'image-d41d8cd98f.png',
+		'css/style.css': 'css/style-81a53f7d04.css'
+	};
+	return Buffer.from(JSON.stringify(manifest, null, 4));
 };
 
 test('identifies and replaces reved filenames in the stream', async t => {

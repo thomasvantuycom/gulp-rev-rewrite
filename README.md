@@ -14,39 +14,6 @@ Only [LTS and current releases](https://github.com/nodejs/Release#release-schedu
 
 ## Usage
 
-The most common use pattern consists of two steps:
-
-1. Revision your assets and create an asset manifest.
-2. Collect the revisioned paths from the manifest and rewrite references to them
-
-```js
-const { src, dest, series } = require('gulp');
-const rev = require('gulp-rev');
-const revRewrite = require('gulp-rev-rewrite');
-
-// Step 1
-function revision() {
-  return src('dist/assets/**/*.{css,js}')
-    .pipe(rev())
-    .pipe(dest('dist/assets'))
-    .pipe(rev.manifest())
-    .pipe(dest('dist/assets'));
-}
-
-// Step 2
-function rewrite() {
-  const manifest = src('dist/assets/rev-manifest.json');
-
-  return src('dist/**/*.html')
-    .pipe(revRewrite({ manifest }))
-    .pipe(dest('dist'));
-}
-
-exports.default = series(revision, rewrite);
-```
-
-Alternatively, you can combine both steps.
-
 ```js
 const { src, dest } = require('gulp');
 const rev = require('gulp-rev');
@@ -63,6 +30,38 @@ function revision() {
 exports.default = revision;
 ```
 
+Alternatively:
+
+1. Revision your assets and create an asset manifest.
+2. Collect the revisioned paths from the manifest and rewrite references to them
+
+```js
+const { readFileSync } = require('fs');
+const { src, dest, series } = require('gulp');
+const rev = require('gulp-rev');
+const revRewrite = require('gulp-rev-rewrite');
+
+// Step 1
+function revision() {
+  return src('dist/assets/**/*.{css,js}')
+    .pipe(rev())
+    .pipe(dest('dist/assets'))
+    .pipe(rev.manifest())
+    .pipe(dest('dist/assets'));
+}
+
+// Step 2
+function rewrite() {
+  const manifest = readFileSync('dist/assets/rev-manifest.json');
+
+  return src('dist/**/*.html')
+    .pipe(revRewrite({ manifest }))
+    .pipe(dest('dist'));
+}
+
+exports.default = series(revision, rewrite);
+```
+
 ## API
 
 ### revRewrite([options])
@@ -73,7 +72,7 @@ Type: `Object`
 
 ##### manifest
 
-Type: `Stream` (e.g., `gulp.src()`)
+Type: `Buffer` (e.g., `fs.readFileSync()`)
 
 Read JSON manifests written out by `rev`. Allows replacing filenames that were revisioned prior to the current task.
 
