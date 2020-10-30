@@ -88,39 +88,6 @@ Type: `Function`
 
 Modify the name of the unreved/reved files before using them. The function receives the unreved/reved filename as the first argument, and the [Vinyl](https://github.com/gulpjs/vinyl#instance-properties) object of the current file as the optional second argument.
 
-For example, if in your manifest you have:
-
-```js
-{"js/app.js.map": "js/app-98adc164.js.map"}
-```
-
-If you wanted to get rid of the `js/` path just for `.map` files (because they
-are sourcemaps and the references to them are relative, not absolute) you could
-do the following:
-
-```js
-const { src, dest } = require('gulp');
-
-function replaceJsIfMap(filename) {
-  if (filename.includes('.map')) {
-    return filename.replace('js/', '');
-  }
-  return filename;
-}
-
-function rewrite() {
-  return src('dist/**/*.js')
-    .pipe(revRewrite({
-        manifest: src('rev-manifest.json'),
-        modifyUnreved: replaceJsIfMap,
-        modifyReved: replaceJsIfMap
-      }))
-    .pipe(dest('dist'));
-}
-
-exports.default = rewrite;    
-```
-
 ## License
 
 MIT © [James K Nelson](http://jamesknelson.com), [Thomas Vantuycom](https://github.com/TheDancingCode)
