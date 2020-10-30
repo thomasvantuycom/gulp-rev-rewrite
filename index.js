@@ -50,18 +50,14 @@ module.exports = function (options = {}) {
 		const stream = this;
 
 		if (options.manifest) {
-			// Collect renames from rev-manifest.
-			options.manifest.on('data', file => {
-				const manifest = JSON.parse(file.contents.toString());
+			const manifest = JSON.parse(options.manifest.toString());
 
-				for (const [unreved, reved] of Object.entries(manifest)) {
-					renames.push({unreved, reved});
-				}
-			});
-			options.manifest.on('end', replaceContents);
-		} else {
-			replaceContents();
+			for (const [unreved, reved] of Object.entries(manifest)) {
+				renames.push({unreved, reved});
+			}
 		}
+
+		replaceContents();
 
 		function replaceContents() {
 			if (options.prefix) {
