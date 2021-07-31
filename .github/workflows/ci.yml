@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [10, 12, 14]
+        node-version: [10, 12, 14, 16]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -34,7 +34,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 16
       - name: Install dependencies
         run: npm ci
       - name: Release
