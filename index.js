@@ -39,7 +39,7 @@ module.exports = function (options = {}) {
 		if (file.revOrigPath) {
 			renames.push({
 				unreved: relativePath(file.revOrigBase, file.revOrigPath),
-				reved: relativePath(file.base, file.path),
+				reved: relativePath(file.base, file.path)
 			});
 		}
 
