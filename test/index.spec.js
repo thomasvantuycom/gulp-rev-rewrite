@@ -4,21 +4,21 @@ import pEvent from 'p-event';
 import rev from 'gulp-rev';
 import revRewrite from '..';
 
-const htmlFileBody =
-  '<link rel="stylesheet" href="/css/style.css"><img src="image.png">';
+const htmlFileBody
+  = '<link rel="stylesheet" href="/css/style.css"><img src="image.png">';
 const cssFileBody = 'body { background: url("image.png"); }';
 const pngFileBody = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
 
 const createFile = (path, contents, encoding = 'utf8') =>
 	new Vinyl({
 		path,
-		contents: Buffer.from(contents, encoding)
+		contents: Buffer.from(contents, encoding),
 	});
 
 const createManifest = () => {
 	const manifest = {
 		'image.png': 'image-d41d8cd98f.png',
-		'css/style.css': 'css/style-81a53f7d04.css'
+		'css/style.css': 'css/style-81a53f7d04.css',
 	};
 	return Buffer.from(JSON.stringify(manifest, null, 4));
 };
@@ -36,12 +36,12 @@ test('identifies and replaces reved filenames in the stream', async t => {
 	revStream.end(createFile('style.css', cssFileBody));
 
 	const files = await data;
-	files.forEach(file => {
+	for (const file of files) {
 		const contents = file.contents.toString();
 		if (file.extname === '.html') {
 			t.regex(contents, /css\/style-[a-z\d]{10}\.css/);
 		}
-	});
+	}
 });
 
 test('works with Windows-style paths', async t => {
@@ -57,12 +57,12 @@ test('works with Windows-style paths', async t => {
 	revStream.end(createFile('index.html', htmlFileBody));
 
 	const files = await data;
-	files.forEach(file => {
+	for (const file of files) {
 		const contents = file.contents.toString();
 		if (file.extname === '.html') {
 			t.true(contents.includes('css/style-81a53f7d04.css'));
 		}
-	});
+	}
 });
 
 test('reads and replaces reved filenames from a manifest', async t => {
@@ -83,7 +83,7 @@ test('allows prefixing reved filenames', async t => {
 
 	const stream = revRewrite({
 		prefix: 'https://www.example.com/',
-		manifest: createManifest()
+		manifest: createManifest(),
 	});
 	const data = pEvent(stream, 'data');
 
@@ -102,7 +102,7 @@ test('allows modifying unreved filenames', async t => {
 
 	const stream = revRewrite({
 		modifyUnreved,
-		manifest: createManifest()
+		manifest: createManifest(),
 	});
 	const data = pEvent.multiple(stream, 'data', {count: 2});
 
@@ -110,7 +110,7 @@ test('allows modifying unreved filenames', async t => {
 	stream.end(createFile('index.html', htmlFileBody));
 
 	const files = await data;
-	files.forEach(file => {
+	for (const file of files) {
 		const contents = file.contents.toString();
 		if (file.extname === '.html') {
 			t.true(contents.includes('css/style-81a53f7d04.css'));
@@ -118,7 +118,7 @@ test('allows modifying unreved filenames', async t => {
 		} else {
 			t.true(contents.includes('image-d41d8cd98f.png'));
 		}
-	});
+	}
 });
 
 test('allows modifying reved filenames', async t => {
@@ -128,7 +128,7 @@ test('allows modifying reved filenames', async t => {
 
 	const stream = revRewrite({
 		modifyReved,
-		manifest: createManifest()
+		manifest: createManifest(),
 	});
 	const data = pEvent.multiple(stream, 'data', {count: 2});
 
@@ -136,7 +136,7 @@ test('allows modifying reved filenames', async t => {
 	stream.end(createFile('index.html', htmlFileBody));
 
 	const files = await data;
-	files.forEach(file => {
+	for (const file of files) {
 		const contents = file.contents.toString();
 		if (file.extname === '.html') {
 			t.true(contents.includes('assets/css/style-81a53f7d04.css'));
@@ -144,14 +144,14 @@ test('allows modifying reved filenames', async t => {
 		} else {
 			t.true(contents.includes('../image-d41d8cd98f.png'));
 		}
-	});
+	}
 });
 
 test('does not replace false positives', async t => {
 	t.plan(1);
 
 	const stream = revRewrite({
-		manifest: createManifest()
+		manifest: createManifest(),
 	});
 	const data = pEvent(stream, 'data');
 
@@ -160,7 +160,7 @@ test('does not replace false positives', async t => {
 		'<img src="not_image.png">',
 		'<img src="notimage.png">',
 		'<img src="image.png.not">',
-		'<img src="image.pngnot">'
+		'<img src="image.pngnot">',
 	];
 	stream.end(createFile('index.html', falsePositives.join('')));
 

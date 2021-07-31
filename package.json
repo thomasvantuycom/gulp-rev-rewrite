@@ -43,7 +43,7 @@
     "p-event": "^4.1.0",
     "semantic-release": "^17.0.0",
     "vinyl": "^2.1.0",
-    "xo": "^0.28.0"
+    "xo": "^0.39.1"
   },
   "ava": {
     "babel": true

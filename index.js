@@ -1,13 +1,13 @@
 'use strict';
 
-const {relative} = require('path');
+const path = require('path');
 const PluginError = require('plugin-error');
 const through = require('through2');
 
-const replace = require('./lib/replace');
+const replace = require('./lib/replace.js');
 
 function relativePath(from, to) {
-	return relative(from, to).replace(/\\/g, '/');
+	return path.relative(from, to).replace(/\\/g, '/');
 }
 
 function prefixPath(path, prefix) {
@@ -39,16 +39,14 @@ module.exports = function (options = {}) {
 		if (file.revOrigPath) {
 			renames.push({
 				unreved: relativePath(file.revOrigBase, file.revOrigPath),
-				reved: relativePath(file.base, file.path)
+				reved: relativePath(file.base, file.path),
 			});
 		}
 
 		cache.push(file);
 
 		callback();
-	}, function (callback) {
-		const stream = this;
-
+	}, callback => {
 		if (options.manifest) {
 			const manifest = JSON.parse(options.manifest.toString());
 
@@ -69,7 +67,7 @@ module.exports = function (options = {}) {
 
 			// Once we have a full list of renames, search/replace in the cached
 			// files and push them through.
-			cache.forEach(file => {
+			for (const file of cache) {
 				const modifiedRenames = renames.map(entry => {
 					const {unreved, reved} = entry;
 					const modifiedUnreved = options.modifyUnreved ? options.modifyUnreved(unreved, file) : unreved;
@@ -88,8 +86,8 @@ module.exports = function (options = {}) {
 					file.contents = Buffer.from(newContents);
 				}
 
-				stream.push(file);
-			});
+				this.push(file);
+			}
 
 			callback();
 		}

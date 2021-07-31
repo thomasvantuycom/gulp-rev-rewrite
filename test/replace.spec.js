@@ -1,15 +1,15 @@
 import test from 'ava';
-import replace from '../lib/replace';
+import replace from '../lib/replace.js';
 
 const renames = [
 	{
 		unreved: 'images/icon.svg',
-		reved: 'images/icon-d41d8cd98f.svg'
+		reved: 'images/icon-d41d8cd98f.svg',
 	},
 	{
 		unreved: 'style.css.map',
-		reved: 'style-98adc164tm.css.map'
-	}
+		reved: 'style-98adc164tm.css.map',
+	},
 ];
 
 test('single quotes', t => {
@@ -46,18 +46,18 @@ test('spaces', t => {
 
 test('slashes', t => {
 	const input = 'body { background: url("path/images/icon.svg"); }';
-	const expected =
-    'body { background: url("path/images/icon-d41d8cd98f.svg"); }';
+	const expected
+    = 'body { background: url("path/images/icon-d41d8cd98f.svg"); }';
 	const output = replace(input, renames);
 
 	t.is(output, expected);
 });
 
 test('backslashes', t => {
-	const input =
-    'document.querySelector("*[style*=\'background-image: url(\\"images/icon.svg\\")\']");';
-	const expected =
-    'document.querySelector("*[style*=\'background-image: url(\\"images/icon-d41d8cd98f.svg\\")\']");';
+	const input
+    = 'document.querySelector("*[style*=\'background-image: url(\\"images/icon.svg\\")\']");';
+	const expected
+    = 'document.querySelector("*[style*=\'background-image: url(\\"images/icon-d41d8cd98f.svg\\")\']");';
 	const output = replace(input, renames);
 
 	t.is(output, expected);
@@ -65,8 +65,8 @@ test('backslashes', t => {
 
 test('query strings', t => {
 	const input = 'body { background: url("images/icon.svg?query=string"); }';
-	const expected =
-    'body { background: url("images/icon-d41d8cd98f.svg?query=string"); }';
+	const expected
+    = 'body { background: url("images/icon-d41d8cd98f.svg?query=string"); }';
 	const output = replace(input, renames);
 
 	t.is(output, expected);
@@ -83,8 +83,8 @@ test('query parameters', t => {
 
 test('fragment identifiers', t => {
 	const input = 'body { background: url("images/icon.svg#fragment"); }';
-	const expected =
-    'body { background: url("images/icon-d41d8cd98f.svg#fragment"); }';
+	const expected
+    = 'body { background: url("images/icon-d41d8cd98f.svg#fragment"); }';
 	const output = replace(input, renames);
 
 	t.is(output, expected);
