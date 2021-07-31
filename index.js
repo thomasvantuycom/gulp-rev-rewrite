@@ -46,7 +46,7 @@ module.exports = function (options = {}) {
 		cache.push(file);
 
 		callback();
-	}, callback => {
+	}, function (callback) {
 		if (options.manifest) {
 			const manifest = JSON.parse(options.manifest.toString());
 
@@ -55,41 +55,37 @@ module.exports = function (options = {}) {
 			}
 		}
 
-		replaceContents();
-
-		function replaceContents() {
-			if (options.prefix) {
-				renames = renames.map(entry => {
-					entry.reved = prefixPath(entry.reved, options.prefix);
-					return entry;
-				});
-			}
-
-			// Once we have a full list of renames, search/replace in the cached
-			// files and push them through.
-			for (const file of cache) {
-				const modifiedRenames = renames.map(entry => {
-					const {unreved, reved} = entry;
-					const modifiedUnreved = options.modifyUnreved ? options.modifyUnreved(unreved, file) : unreved;
-					const modifiedReved = options.modifyReved ? options.modifyReved(reved, file) : reved;
-					return {unreved: modifiedUnreved, reved: modifiedReved};
-				});
-
-				const contents = file.contents.toString();
-				let newContents = replace(contents, modifiedRenames);
-
-				if (options.prefix) {
-					newContents = newContents.split('/' + options.prefix).join(options.prefix);
-				}
-
-				if (newContents !== contents) {
-					file.contents = Buffer.from(newContents);
-				}
-
-				this.push(file);
-			}
-
-			callback();
+		if (options.prefix) {
+			renames = renames.map(entry => {
+				entry.reved = prefixPath(entry.reved, options.prefix);
+				return entry;
+			});
 		}
+
+		// Once we have a full list of renames, search/replace in the cached
+		// files and push them through.
+		for (const file of cache) {
+			const modifiedRenames = renames.map(entry => {
+				const {unreved, reved} = entry;
+				const modifiedUnreved = options.modifyUnreved ? options.modifyUnreved(unreved, file) : unreved;
+				const modifiedReved = options.modifyReved ? options.modifyReved(reved, file) : reved;
+				return {unreved: modifiedUnreved, reved: modifiedReved};
+			});
+
+			const contents = file.contents.toString();
+			let newContents = replace(contents, modifiedRenames);
+
+			if (options.prefix) {
+				newContents = newContents.split('/' + options.prefix).join(options.prefix);
+			}
+
+			if (newContents !== contents) {
+				file.contents = Buffer.from(newContents);
+			}
+
+			this.push(file);
+		}
+
+		callback();
 	});
 };
