@@ -39,7 +39,7 @@
   "devDependencies": {
     "@ava/babel": "^2.0.0",
     "ava": "^3.0.0",
-    "gulp-rev": "^9.0.0",
+    "gulp-rev": "^10.0.0",
     "p-event": "^4.1.0",
     "semantic-release": "^19.0.5",
     "vinyl": "^3.0.0",
