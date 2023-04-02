@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@ava/babel": "^2.0.0",
-    "ava": "^3.0.0",
+    "ava": "^5.2.0",
     "gulp-rev": "^9.0.0",
     "p-event": "^4.1.0",
     "semantic-release": "^21.0.0",
