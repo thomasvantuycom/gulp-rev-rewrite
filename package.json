@@ -40,7 +40,7 @@
     "@ava/babel": "^2.0.0",
     "ava": "^3.0.0",
     "gulp-rev": "^9.0.0",
-    "p-event": "^4.1.0",
+    "p-event": "^6.0.0",
     "semantic-release": "^21.0.0",
     "vinyl": "^3.0.0",
     "xo": "0.39.1"
