@@ -10,20 +10,8 @@ function relativePath(from, to) {
 	return path.relative(from, to).replace(/\\/g, '/');
 }
 
-function prefixPath(path, prefix) {
-	if (path.startsWith('/') && prefix.endsWith('/')) {
-		return `${prefix}${path.slice(1)}`;
-	}
-
-	if (!path.startsWith('/') && !prefix.endsWith('/')) {
-		return `${prefix}/${path}`;
-	}
-
-	return `${prefix}${path}`;
-}
-
 module.exports = function (options = {}) {
-	let renames = [];
+	const renames = [];
 	const cache = [];
 
 	return new Transform({
@@ -57,29 +45,11 @@ module.exports = function (options = {}) {
 				}
 			}
 
-			if (options.prefix) {
-				renames = renames.map(entry => {
-					entry.reved = prefixPath(entry.reved, options.prefix);
-					return entry;
-				});
-			}
-
 			// Once we have a full list of renames, search/replace in the cached
 			// files and push them through.
 			for (const file of cache) {
-				const modifiedRenames = renames.map(entry => {
-					const {unreved, reved} = entry;
-					const modifiedUnreved = options.modifyUnreved ? options.modifyUnreved(unreved, file) : unreved;
-					const modifiedReved = options.modifyReved ? options.modifyReved(reved, file) : reved;
-					return {unreved: modifiedUnreved, reved: modifiedReved};
-				});
-
 				const contents = file.contents.toString();
-				let newContents = replace(contents, modifiedRenames);
-
-				if (options.prefix) {
-					newContents = newContents.split('/' + options.prefix).join(options.prefix);
-				}
+				const newContents = replace(contents, renames);
 
 				if (newContents !== contents) {
 					file.contents = Buffer.from(newContents);

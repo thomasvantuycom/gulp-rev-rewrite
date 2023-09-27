@@ -76,18 +76,6 @@ Type: `Buffer` (e.g., `fs.readFileSync()`)
 
 Read JSON manifests written out by `rev`. Allows replacing filenames that were revisioned prior to the current task.
 
-##### prefix
-
-Type: `String`
-
-Add a prefix to each replacement.
-
-##### modifyUnreved, modifyReved
-
-Type: `Function`
-
-Modify the name of the unreved/reved files before using them. The function receives the unreved/reved filename as the first argument, and the [Vinyl](https://github.com/gulpjs/vinyl#instance-properties) object of the current file as the optional second argument.
-
 ## License
 
 MIT © [James K Nelson](http://jamesknelson.com), [Thomas Vantuycom](https://github.com/TheDancingCode)
