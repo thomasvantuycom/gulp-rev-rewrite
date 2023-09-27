@@ -1,24 +1,25 @@
+import {Buffer} from 'node:buffer';
 import test from 'ava';
 import Vinyl from 'vinyl';
-import pEvent from 'p-event';
+import {pEvent, pEventIterator} from 'p-event';
 import rev from 'gulp-rev';
-import revRewrite from '..';
+import revRewrite from '../index.js';
 
-const htmlFileBody =
-  '<link rel="stylesheet" href="/css/style.css"><img src="image.png">';
+const htmlFileBody
+  = '<link rel="stylesheet" href="/css/style.css"><img src="image.png">';
 const cssFileBody = 'body { background: url("image.png"); }';
 const pngFileBody = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
 
 const createFile = (path, contents, encoding = 'utf8') =>
 	new Vinyl({
 		path,
-		contents: Buffer.from(contents, encoding)
+		contents: Buffer.from(contents, encoding),
 	});
 
 const createManifest = () => {
 	const manifest = {
 		'image.png': 'image-d41d8cd98f.png',
-		'css/style.css': 'css/style-81a53f7d04.css'
+		'css/style.css': 'css/style-81a53f7d04.css',
 	};
 	return Buffer.from(JSON.stringify(manifest, null, 4));
 };
@@ -28,15 +29,16 @@ test('identifies and replaces reved filenames in the stream', async t => {
 
 	const revStream = rev();
 	const revRewriteStream = revRewrite();
-	const data = pEvent.multiple(revRewriteStream, 'data', {count: 2});
+	const data = pEventIterator(revRewriteStream, 'data', {
+		resolutionEvents: ['finish']
+	});
 
 	revStream.pipe(revRewriteStream);
 
 	revStream.write(createFile('index.html', htmlFileBody));
 	revStream.end(createFile('style.css', cssFileBody));
 
-	const files = await data;
-	for (const file of files) {
+	for await (const file of data) {
 		const contents = file.contents.toString();
 		if (file.extname === '.html') {
 			t.regex(contents, /css\/style-[a-z\d]{10}\.css/);
@@ -49,15 +51,16 @@ test('works with Windows-style paths', async t => {
 
 	const revStream = rev();
 	const revRewriteStream = revRewrite();
-	const data = pEvent.multiple(revRewriteStream, 'data', {count: 2});
+	const data = pEventIterator(revRewriteStream, 'data', {
+		resolutionEvents: ['finish']
+	});
 
 	revStream.pipe(revRewriteStream);
 
 	revStream.write(createFile('css\\style.css', cssFileBody));
 	revStream.end(createFile('index.html', htmlFileBody));
 
-	const files = await data;
-	for (const file of files) {
+	for await (const file of data) {
 		const contents = file.contents.toString();
 		if (file.extname === '.html') {
 			t.true(contents.includes('css/style-81a53f7d04.css'));
@@ -82,7 +85,7 @@ test('does not replace false positives', async t => {
 	t.plan(1);
 
 	const stream = revRewrite({
-		manifest: createManifest()
+		manifest: createManifest(),
 	});
 	const data = pEvent(stream, 'data');
 
@@ -91,7 +94,7 @@ test('does not replace false positives', async t => {
 		'<img src="not_image.png">',
 		'<img src="notimage.png">',
 		'<img src="image.png.not">',
-		'<img src="image.pngnot">'
+		'<img src="image.pngnot">',
 	];
 	stream.end(createFile('index.html', falsePositives.join('')));
 

@@ -1,16 +1,14 @@
-'use strict';
-
-const path = require('path');
-const PluginError = require('plugin-error');
-const {Transform} = require('stream');
-
-const replace = require('./lib/replace.js');
+import path from 'node:path';
+import {Buffer} from 'node:buffer';
+import {Transform} from 'node:stream';
+import PluginError from 'plugin-error';
+import replace from './lib/replace.js';
 
 function relativePath(from, to) {
-	return path.relative(from, to).replace(/\\/g, '/');
+	return path.relative(from, to).replaceAll('\\', '/');
 }
 
-module.exports = function (options = {}) {
+export default function plugin(options = {}) {
 	const renames = [];
 	const cache = [];
 
@@ -29,7 +27,7 @@ module.exports = function (options = {}) {
 			if (file.revOrigPath) {
 				renames.push({
 					unreved: relativePath(file.revOrigBase, file.revOrigPath),
-					reved: relativePath(file.base, file.path)
+					reved: relativePath(file.base, file.path),
 				});
 			}
 
@@ -60,4 +58,4 @@ module.exports = function (options = {}) {
 
 			callback();
 		}});
-};
+}

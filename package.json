@@ -22,34 +22,27 @@
     "index.js",
     "lib"
   ],
+  "type": "module",
+  "exports": "./index.js",
   "author": {
     "name": "Thomas Vantuycom",
     "email": "thomasvantuycom@protonmail.com",
     "url": "https://github.com/TheDancingCode"
   },
   "engines": {
-    "node": ">=12"
+    "node": ">=18"
   },
   "license": "MIT",
   "dependencies": {
-    "lodash.escaperegexp": "^4.1.2",
+    "escape-string-regexp": "^5.0.0",
     "plugin-error": "^2.0.0"
   },
   "devDependencies": {
-    "@ava/babel": "^2.0.0",
-    "ava": "^3.0.0",
-    "gulp-rev": "^9.0.0",
-    "p-event": "^4.1.0",
-    "semantic-release": "^21.0.0",
+    "ava": "^5.0.0",
+    "gulp-rev": "^10.0.0",
+    "p-event": "^6.0.0",
+    "semantic-release": "^22.0.0",
     "vinyl": "^3.0.0",
-    "xo": "0.39.1"
-  },
-  "ava": {
-    "babel": true
-  },
-  "xo": {
-    "rules": {
-      "unicorn/string-content": "off"
-    }
+    "xo": "^0.56.0"
   }
 }
