@@ -1,38 +1,38 @@
 {
   "name": "gulp-rev-rewrite",
-  "version": "0.0.0-development",
-  "description": "Rewrite occurences of filenames which have been renamed by gulp-rev",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/TheDancingCode/gulp-rev-rewrite.git"
+  "version": "5.0.0",
+  "description": "Rewrite references to assets that have been revisioned using gulp-rev",
+  "license": "MIT",
+  "repository": "thomasvantuycom/gulp-rev-rewrite",
+  "author": {
+    "name": "Thomas Vantuycom",
+    "email": "thomasvantuycom@proton.me",
+    "url": "https://www.thomasvantuycom.com"
+  },
+  "type": "module",
+  "exports": "./index.js",
+  "engines": {
+    "node": ">=18"
   },
   "scripts": {
     "test": "xo && ava"
   },
-  "keywords": [
-    "gulpplugin",
-    "rev",
-    "revision",
-    "version",
-    "replace",
-    "asset"
-  ],
   "files": [
     "index.js",
     "lib"
   ],
-  "type": "module",
-  "exports": "./index.js",
-  "author": {
-    "name": "Thomas Vantuycom",
-    "email": "thomasvantuycom@protonmail.com",
-    "url": "https://github.com/TheDancingCode"
-  },
-  "engines": {
-    "node": ">=18"
-  },
-  "license": "MIT",
+  "keywords": [
+    "asset",
+    "assets",
+    "gulpplugin",
+    "replace",
+    "rev",
+    "revision",
+    "revving",
+    "rewrite",
+    "version",
+    "versioning"
+  ],
   "dependencies": {
     "escape-string-regexp": "^5.0.0",
     "plugin-error": "^2.0.0"
