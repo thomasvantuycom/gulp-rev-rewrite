@@ -1,6 +1,6 @@
 {
   "name": "gulp-rev-rewrite",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "Rewrite references to assets that have been revisioned using gulp-rev",
   "license": "MIT",
   "repository": "thomasvantuycom/gulp-rev-rewrite",
@@ -52,9 +52,12 @@
       "@semantic-release/release-notes-generator",
       "@semantic-release/changelog",
       "@semantic-release/npm",
-      ["@semantic-release/git", {
-        "message": "release: ${nextRelease.version}"
-      }],
+      [
+        "@semantic-release/git",
+        {
+          "message": "release: ${nextRelease.version}"
+        }
+      ],
       "@semantic-release/github"
     ]
   }
