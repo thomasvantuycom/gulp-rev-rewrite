@@ -38,10 +38,24 @@
     "plugin-error": "^2.0.0"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "ava": "^5.0.0",
     "p-event": "^6.0.0",
     "semantic-release": "^22.0.0",
     "vinyl": "^3.0.0",
     "xo": "^0.56.0"
+  },
+  "release": {
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      ["@semantic-release/git", {
+        "message": "release: ${nextRelease.version}"
+      }],
+      "@semantic-release/github"
+    ]
   }
 }
