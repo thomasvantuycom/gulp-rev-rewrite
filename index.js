@@ -9,8 +9,8 @@ function relativePath(from, to) {
 }
 
 export default function plugin(options = {}) {
-	const renames = [];
-	const cache = [];
+	let manifest = {};
+	const files = [];
 
 	return new Transform({
 		objectMode: true,
@@ -23,32 +23,28 @@ export default function plugin(options = {}) {
 				return callback(new PluginError('gulp-rev-rewrite', 'Streaming not supported'));
 			}
 
-			// Collect renames from reved files.
+			// Collect original and revisioned paths directly from the vinyl files in the stream
 			if (file.revOrigPath) {
-				renames.push({
-					unreved: relativePath(file.revOrigBase, file.revOrigPath),
-					reved: relativePath(file.base, file.path),
-				});
+				const originalPath = relativePath(file.revOrigBase, file.revOrigPath);
+				const revisionedPath = relativePath(file.base, file.path);
+				manifest[originalPath] = revisionedPath;
 			}
 
-			cache.push(file);
+			files.push(file);
 
 			callback();
 		}, flush(callback) {
+			// Collect original and revisioned paths from a manifest
 			if (options.manifest) {
-				const manifest = JSON.parse(options.manifest.toString());
-
-				for (const [unreved, reved] of Object.entries(manifest)) {
-					renames.push({unreved, reved});
-				}
+				manifest = Object.assign(manifest, JSON.parse(options.manifest.toString()));
 			}
 
-			// Once we have a full list of renames, search/replace in the cached
-			// files and push them through.
-			for (const file of cache) {
+			// Rewrite paths
+			for (const file of files) {
 				const contents = file.contents.toString();
-				const newContents = replace(contents, renames);
+				const newContents = replace(contents, manifest);
 
+				// Update contents only if they changed
 				if (newContents !== contents) {
 					file.contents = Buffer.from(newContents);
 				}
