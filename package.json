@@ -39,7 +39,6 @@
   },
   "devDependencies": {
     "ava": "^5.0.0",
-    "gulp-rev": "^10.0.0",
     "p-event": "^6.0.0",
     "semantic-release": "^22.0.0",
     "vinyl": "^3.0.0",
