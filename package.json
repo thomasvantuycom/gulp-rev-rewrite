@@ -42,7 +42,7 @@
     "@semantic-release/git": "^10.0.1",
     "ava": "^5.0.0",
     "p-event": "^6.0.0",
-    "semantic-release": "^22.0.0",
+    "semantic-release": "^23.0.0",
     "vinyl": "^3.0.0",
     "xo": "^0.56.0"
   },
