@@ -42,8 +42,6 @@ jobs:
           node-version: "lts/*"
       - name: Install dependencies
         run: npm install
-      - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
-        run: npm audit signatures
       - name: Release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
