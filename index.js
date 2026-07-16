@@ -8,41 +8,53 @@ function relativePath(from, to) {
 	return path.relative(from, to).replaceAll('\\', '/');
 }
 
-export default function plugin(options = {}) {
-	let manifest = {};
-	const files = [];
-
+export default function plugin({manifest} = {}) {
 	return new Transform({
 		objectMode: true,
-		transform(file, encoding, callback) {
+
+		construct(callback) {
+			this.revisions = {};
+			this.files = [];
+
+			callback();
+		},
+
+		transform(file, _, callback) {
 			if (file.isNull()) {
-				return callback(null, file);
+				callback(null, file);
+
+				return;
 			}
 
 			if (file.isStream()) {
-				return callback(new PluginError('gulp-rev-rewrite', 'Streaming not supported'));
+				callback(new PluginError('gulp-rev-rewrite', 'Streaming not supported'));
+
+				return;
 			}
 
 			// Collect original and revisioned paths directly from the vinyl files in the stream
 			if (file.revOrigPath) {
 				const originalPath = relativePath(file.revOrigBase, file.revOrigPath);
 				const revisionedPath = relativePath(file.base, file.path);
-				manifest[originalPath] = revisionedPath;
+
+				this.revisions[originalPath] = revisionedPath;
 			}
 
-			files.push(file);
+			this.files.push(file);
 
 			callback();
-		}, flush(callback) {
+		},
+
+		flush(callback) {
 			// Collect original and revisioned paths from a manifest
-			if (options.manifest) {
-				manifest = Object.assign(manifest, JSON.parse(options.manifest.toString()));
+			if (manifest) {
+				Object.assign(this.revisions, JSON.parse(manifest.toString()));
 			}
 
 			// Rewrite paths
-			for (const file of files) {
+			for (const file of this.files) {
 				const contents = file.contents.toString();
-				const newContents = replace(contents, manifest);
+				const newContents = replace(contents, this.revisions);
 
 				// Update contents only if they changed
 				if (newContents !== contents) {
