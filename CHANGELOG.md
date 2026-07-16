@@ -1,3 +1,15 @@
+# [7.0.0](https://github.com/thomasvantuycom/gulp-rev-rewrite/compare/v6.0.0...v7.0.0) (2026-07-16)
+
+
+### Code Refactoring
+
+* use native regex escaping ([304a3bf](https://github.com/thomasvantuycom/gulp-rev-rewrite/commit/304a3bf8db42108826cd3114143d0b394ae90f38))
+
+
+### BREAKING CHANGES
+
+* Requires Node 24
+
 # [6.0.0](https://github.com/thomasvantuycom/gulp-rev-rewrite/compare/v5.0.0...v6.0.0) (2023-09-28)
 
 
