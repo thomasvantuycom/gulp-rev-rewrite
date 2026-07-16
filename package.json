@@ -35,16 +35,16 @@
   ],
   "dependencies": {
     "escape-string-regexp": "^5.0.0",
-    "plugin-error": "^2.0.0"
+    "plugin-error": "^2.0.1"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "ava": "^5.0.0",
-    "p-event": "^6.0.0",
-    "semantic-release": "^23.0.2",
-    "vinyl": "^3.0.0",
-    "xo": "^0.56.0"
+    "ava": "^8.0.1",
+    "p-event": "^7.1.0",
+    "semantic-release": "^25.0.7",
+    "vinyl": "^3.0.1",
+    "xo": "^4.0.0"
   },
   "release": {
     "plugins": [
