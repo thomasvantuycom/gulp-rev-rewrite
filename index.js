@@ -53,5 +53,6 @@ export default function plugin(options = {}) {
 			}
 
 			callback();
-		}});
+		},
+	});
 }

@@ -19,11 +19,15 @@ test('collects and rewrites revisioned paths from the stream', async t => {
 		revOrigPath: 'css/style.css',
 	}));
 
+	let html;
+
 	for await (const file of data) {
 		if (file.extname === '.html') {
-			t.is(file.contents.toString(), '<link rel="stylesheet" href="/css/style-f2b804d3e3.css">');
+			html = file.contents.toString();
 		}
 	}
+
+	t.is(html, '<link rel="stylesheet" href="/css/style-f2b804d3e3.css">');
 });
 
 test('collects and rewrites revisioned paths from a manifest', async t => {
@@ -50,16 +54,20 @@ test('works with Windows-style paths', async t => {
 		contents: '<link rel="stylesheet" href="/css/style.css">',
 	}));
 	stream.end(createFile({
-		path: 'css\\style-f2b804d3e3.css',
+		path: String.raw`css\style-f2b804d3e3.css`,
 		contents: 'body { color: red; }',
 		revOrigPath: 'css/style.css',
 	}));
 
+	let html;
+
 	for await (const file of data) {
 		if (file.extname === '.html') {
-			t.is(file.contents.toString(), '<link rel="stylesheet" href="/css/style-f2b804d3e3.css">');
+			html = file.contents.toString();
 		}
 	}
+
+	t.is(html, '<link rel="stylesheet" href="/css/style-f2b804d3e3.css">');
 });
 
 test('does not corrupt binary files', async t => {

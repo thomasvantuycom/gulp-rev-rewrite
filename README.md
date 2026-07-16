@@ -6,7 +6,7 @@ Effortlessly rewrite references to revisioned assets by incorporating `gulp-rev-
 
 ## Install
 
-```
+```sh
 npm install gulp-rev-rewrite --save-dev
 ```
 
@@ -65,7 +65,7 @@ export default gulp.series(revision, rewrite);
 
 ## API
 
-### revRewrite([options])
+### revRewrite(options?)
 
 #### options
 
