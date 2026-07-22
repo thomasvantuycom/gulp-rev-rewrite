@@ -37,7 +37,7 @@
     "plugin-error": "^2.0.1"
   },
   "devDependencies": {
-    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/changelog": "^7.0.0",
     "@semantic-release/git": "^11.0.0",
     "ava": "^8.0.1",
     "p-event": "^7.1.0",
