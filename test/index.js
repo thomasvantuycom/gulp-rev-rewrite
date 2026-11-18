@@ -1,78 +1,62 @@
-import test from 'ava';
-import {pEvent, pEventIterator} from 'p-event';
+import test from 'node:test';
+import assert from 'node:assert/strict';
 import revRewrite from '../index.js';
 import {createFile, createManifest} from './_helper.js';
 
-test('collects and rewrites revisioned paths from the stream', async t => {
+test('collects and rewrites revisioned paths from the stream', async () => {
 	const stream = revRewrite();
-	const data = pEventIterator(stream, 'data', {
-		resolutionEvents: ['finish'],
-	});
 
 	stream.write(createFile({
 		path: 'index.html',
 		contents: '<link rel="stylesheet" href="/css/style.css">',
 	}));
+
 	stream.end(createFile({
 		path: 'css/style-f2b804d3e3.css',
 		contents: 'body { color: red; }',
 		revOrigPath: 'css/style.css',
 	}));
 
-	let html;
+	const files = await stream.toArray();
+	const htmlFile = files.find(file => file.extname === '.html');
 
-	for await (const file of data) {
-		if (file.extname === '.html') {
-			html = file.contents.toString();
-		}
-	}
-
-	t.is(html, '<link rel="stylesheet" href="/css/style-f2b804d3e3.css">');
+	assert.equal(htmlFile.contents.toString(), '<link rel="stylesheet" href="/css/style-f2b804d3e3.css">');
 });
 
-test('collects and rewrites revisioned paths from a manifest', async t => {
+test('collects and rewrites revisioned paths from a manifest', async () => {
 	const stream = revRewrite({manifest: createManifest()});
-	const data = pEvent(stream, 'data');
 
 	stream.end(createFile({
 		path: 'index.html',
 		contents: '<link rel="stylesheet" href="/css/style.css">',
 	}));
 
-	const file = await data;
-	t.is(file.contents.toString(), '<link rel="stylesheet" href="/css/style-f2b804d3e3.css">');
+	const [file] = await stream.toArray();
+	assert.equal(file.contents.toString(), '<link rel="stylesheet" href="/css/style-f2b804d3e3.css">');
 });
 
-test('works with Windows-style paths', async t => {
+test('works with Windows-style paths', async () => {
 	const stream = revRewrite();
-	const data = pEventIterator(stream, 'data', {
-		resolutionEvents: ['finish'],
-	});
 
 	stream.write(createFile({
 		path: 'index.html',
 		contents: '<link rel="stylesheet" href="/css/style.css">',
 	}));
+
 	stream.end(createFile({
 		path: String.raw`css\style-f2b804d3e3.css`,
 		contents: 'body { color: red; }',
 		revOrigPath: 'css/style.css',
 	}));
 
-	let html;
+	const files = await stream.toArray();
+	const htmlFile = files.find(file => file.extname === '.html');
 
-	for await (const file of data) {
-		if (file.extname === '.html') {
-			html = file.contents.toString();
-		}
-	}
-
-	t.is(html, '<link rel="stylesheet" href="/css/style-f2b804d3e3.css">');
+	assert.equal(htmlFile.contents.toString(), '<link rel="stylesheet" href="/css/style-f2b804d3e3.css">');
 });
 
-test('does not corrupt binary files', async t => {
+test('does not corrupt binary files', async () => {
 	const stream = revRewrite({manifest: createManifest()});
-	const data = pEvent(stream, 'data');
 
 	const contents = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
 
@@ -82,6 +66,7 @@ test('does not corrupt binary files', async t => {
 		encoding: 'base64',
 	}));
 
-	const file = await data;
-	t.is(file.contents.toString('base64'), contents);
+	const [file] = await stream.toArray();
+
+	assert.equal(file.contents.toString('base64'), contents);
 });
